@@ -29,14 +29,14 @@ jobs:
           # Remove leading spaces from each line
           CONTENT=$(echo "$CONTENT" | sed 's/^[ \t]*//')
           # the following lines are only required for multi line json
-          CONTENT="${CONTENT//'%'/'%25'}"
-          CONTENT="${CONTENT//$'\n'/'%0A'}"
-          CONTENT="${CONTENT//$'\r'/'%0D'}"
+          CONTENT="${CONTENT//'%'/''}"
+          CONTENT="${CONTENT//$'\n'/''}"
+          CONTENT="${CONTENT//$'\r'/''}"
           # end of optional handling for multi line json
           echo "value=$CONTENT" >> $GITHUB_OUTPUT
 
       - name: Echo value
-        run: echo "${{ fromJson(steps.sites.outputs.value) }}"
+        run: echo "${{ steps.sites.outputs.value }}"
 
   get-link:
     name: Get link of ${{ matrix.site_name}}
