@@ -9,10 +9,12 @@ on:
       - main
 
 jobs:
-  parepare:
+  prepare:
     name: Prepare
     timeout-minutes: 1
     runs-on: ubuntu-latest
+    outputs:
+      sites: ${{ steps.sites.outputs.value }}
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -32,6 +34,23 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=value::$content"
-        
+
       - name: Echo value
         run: echo "${{fromJson(steps.sites.outputs.value)}}"
+
+  get-link:
+    name: Get link of ${{ matrix.site_name}}
+    runs-on: ubuntu-latest
+    needs: [prepare]
+    continue-on-error: true
+    strategy:
+      fail-fast: true
+      matrix:
+        include: ${{ fromJson(needs.prepare.outputs.sites) }}
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-crawler
+          path: crawler
+          token: ${{ secrets.GH_PAT }}
