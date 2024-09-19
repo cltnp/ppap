@@ -1,0 +1,37 @@
+name: Get links
+
+on:
+  schedule:
+    - cron: 0/10 * * * *
+
+  push:
+    branches:
+      - main
+
+jobs:
+  parepare:
+    name: Prepare
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-crawler
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Check list website
+        id: sites
+        run: |
+          content=`cat ./src/conf/websites.json`
+          # Remove leading spaces from each line
+          content=$(echo "$content" | sed 's/^[ \t]*//')
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=value::$content"
+        
+      - name: Echo value
+        run: echo "${{fromJson(steps.sites.outputs.value)}}"
