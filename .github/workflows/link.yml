@@ -25,15 +25,15 @@ jobs:
       - name: Check list website
         id: sites
         run: |
-          content=`cat ./src/conf/websites.json`
+          CONTENT=`cat ./src/conf/websites.json`
           # Remove leading spaces from each line
-          content=$(echo "$content" | sed 's/^[ \t]*//')
+          CONTENT=$(echo "$CONTENT" | sed 's/^[ \t]*//')
           # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
+          CONTENT="${CONTENT//'%'/'%25'}"
+          CONTENT="${CONTENT//$'\n'/'%0A'}"
+          CONTENT="${CONTENT//$'\r'/'%0D'}"
           # end of optional handling for multi line json
-          echo "value=$(content)" >> "$GITHUB_OUTPUT"
+          echo "value=$CONTENT" >> $GITHUB_OUTPUT
 
       - name: Echo value
         run: echo "${{ steps.sites.outputs.value }}"
