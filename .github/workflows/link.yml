@@ -36,7 +36,7 @@ jobs:
           echo "value=$CONTENT" >> $GITHUB_OUTPUT
 
       - name: Echo value
-        run: echo "${{ steps.sites.outputs.value }}"
+        run: echo "${{ fromJson(steps.sites.outputs.value) }}"
 
   get-link:
     name: Get link of ${{ matrix.site_name}}
