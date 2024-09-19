@@ -33,7 +33,7 @@ jobs:
           content="${content//$'\n'/'%0A'}"
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
-          echo "::set-output name=value::$content"
+          echo "value=$(content)" >> "$GITHUB_OUTPUT"
 
       - name: Echo value
         run: echo "${{fromJson(steps.sites.outputs.value)}}"
@@ -47,6 +47,9 @@ jobs:
       fail-fast: true
       matrix:
         include: ${{ fromJson(needs.prepare.outputs.sites) }}
+    env:
+      SITE_URL: ${{ matrix.site_url }}
+
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -54,3 +57,7 @@ jobs:
           repository: ClutterNews/nodejs-crawler
           path: crawler
           token: ${{ secrets.GH_PAT }}
+
+      - name: Run get link
+        working-directory: crawler
+        run: node index.js
