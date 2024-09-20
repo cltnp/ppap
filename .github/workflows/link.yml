@@ -59,4 +59,4 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Run get link
-        run: node index.js
+        run: node run start
