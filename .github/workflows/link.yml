@@ -61,14 +61,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "./crawler/.nvmrc"
+          node-version-file: "crawler/.nvmrc"
 
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
-          path: ./crawler/node_modules
-          key: cache-node-modules-${{ hashFiles('./crawler/package-lock.json') }}
+          path: crawler/node_modules
+          key: cache-node-modules-${{ hashFiles('crawler/package-lock.json') }}
           lookup-only: true
 
       - name: Install
