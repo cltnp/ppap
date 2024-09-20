@@ -24,16 +24,7 @@ jobs:
 
       - name: Check list website
         id: sites
-        run: |
-          CONTENT=`cat ./src/conf/websites.json`
-          # Remove leading spaces from each line
-          CONTENT=$(echo "$CONTENT" | sed 's/^[ \t]*//')
-          # the following lines are only required for multi line json
-          CONTENT="${CONTENT//'%'/''}"
-          CONTENT="${CONTENT//$'\n'/''}"
-          CONTENT="${CONTENT//$'\r'/''}"
-          # end of optional handling for multi line json
-          echo "value=$CONTENT" >> $GITHUB_OUTPUT
+        run: echo "value=$(node src/untils/action/websites.js)" >> $GITHUB_OUTPUT
 
       - name: Echo value
         run: echo "${{ steps.sites.outputs.value }}"
