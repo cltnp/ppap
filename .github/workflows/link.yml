@@ -62,16 +62,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
-          lookup-only: true
-
       - name: Install
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
       - name: Run get link
