@@ -58,7 +58,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Echo value
-        run: echo "${{ matrix }}"
+        run: echo "${{ toJson(matrix) }}"
 
       - name: Setup Node
         uses: actions/setup-node@v4
