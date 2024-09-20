@@ -55,27 +55,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/nodejs-crawler
-          path: crawler
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "crawler/.nvmrc"
+          node-version-file: ".nvmrc"
 
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
-          path: crawler/node_modules
-          key: cache-node-modules-${{ hashFiles('crawler/package-lock.json') }}
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
           lookup-only: true
 
       - name: Install
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        working-directory: crawler
         run: npm install
 
       - name: Run get link
-        working-directory: crawler
         run: node index.js
