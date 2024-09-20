@@ -57,16 +57,16 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           cache: "npm"
           node-version-file: ".nvmrc"
-
-      - name: Install lib
-        if: ${{ hashFiles('node_modules/.package-lock.json') == '' }}
-        run: npm install
       
       - name: test
         run: |
           echo ${{ hashFiles('node_modules/.package-lock.json') }}
           echo ${{ hashFiles('node_modules/.package-lock-test.json') }}
           cd node_modules && ls
+
+      - name: Install lib
+        if: ${{ hashFiles('node_modules/.package-lock.json') == '' }}
+        run: npm install
 
       - name: Run get link
         run: npm run start
