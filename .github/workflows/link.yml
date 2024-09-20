@@ -58,6 +58,11 @@ jobs:
           cache: "npm"
           node-version-file: ".nvmrc"
           cache-dependency-path: package-lock.json
+      
+      - name: test
+        run: |
+          echo ${{ hashFiles('node_modules/.package-lock.json') }}
+          echo ${{ hashFiles('node_modules/.package-lock-test.json') }}
 
       - name: Install lib
         if: ${{ hashFiles('node_modules/.package-lock.json') == '' }}
