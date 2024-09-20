@@ -57,6 +57,9 @@ jobs:
           repository: ClutterNews/nodejs-crawler
           token: ${{ secrets.GH_PAT }}
 
+      - name: Echo value
+        run: echo "${{ matrix }}"
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
