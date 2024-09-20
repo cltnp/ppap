@@ -59,12 +59,9 @@ jobs:
           node-version-file: ".nvmrc"
           cache-dependency-path: package-lock.json
 
-      - name: Commit files
+      - name: Install lib
         if: ${{ hashFiles('node_modules/.package-lock.json') == '' }}
         run: npm install
-
-      - name: Test
-        run: ls
 
       - name: Run get link
         run: npm run start
