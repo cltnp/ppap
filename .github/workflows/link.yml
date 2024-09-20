@@ -63,6 +63,7 @@ jobs:
         run: |
           echo ${{ hashFiles('node_modules/.package-lock.json') }}
           echo ${{ hashFiles('node_modules/.package-lock-test.json') }}
+          cd node_modules && ls
 
       - name: Install lib
         if: ${{ hashFiles('node_modules/.package-lock.json') == '' }}
