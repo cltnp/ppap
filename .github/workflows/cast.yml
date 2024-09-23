@@ -34,7 +34,10 @@ jobs:
         run: echo "${{ steps.sites.outputs.value }}"
 
       - name: test
-        run: curl -X GET -H "Accept:application/json, text/plain, */*" -H "Content-Type:text/plain" "https://www.cambodiadaily.com/category/news"
+        run: |
+          curl --location 'https://www.cambodiadaily.com/category/news' \
+           --header 'Accept: application/json, text/plain, */*' \
+           --header 'Content-Type: text/plain'
 
   get-link:
     name: Get link of ${{ matrix.site_name}}
