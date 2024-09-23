@@ -16,7 +16,7 @@ jobs:
   pre:
     name: Pre
     timeout-minutes: 1
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     outputs:
       sites: ${{ steps.sites.outputs.value }}
     steps:
