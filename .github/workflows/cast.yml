@@ -6,7 +6,7 @@ on:
 
   repository_dispatch:
     types:
-      - ap
+      - cast
 
   push:
     branches:
@@ -28,7 +28,7 @@ jobs:
 
       - name: Check list website
         id: sites
-        run: echo "value=$(node src/untils/action/websites.js)" >> $GITHUB_OUTPUT
+        run: echo "value=$(node src/utils/action/websites.js)" >> $GITHUB_OUTPUT
 
       - name: Echo value
         run: echo "${{ steps.sites.outputs.value }}"
