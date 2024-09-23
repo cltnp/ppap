@@ -1,4 +1,4 @@
-name: ":goal_net: cast net"
+name: ":goal_net: cast"
 
 on:
   schedule:
