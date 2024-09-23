@@ -88,4 +88,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: after
-        run: echo ${{ needs.run.outputs.cast }}
+        run: echo ${{ needs.run.outputs.result }}
