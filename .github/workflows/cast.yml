@@ -13,8 +13,8 @@ on:
       - main
 
 jobs:
-  prepare:
-    name: Prepare
+  pre:
+    name: Pre
     timeout-minutes: 1
     runs-on: ubuntu-latest
     outputs:
@@ -33,21 +33,15 @@ jobs:
       - name: Echo value
         run: echo "${{ steps.sites.outputs.value }}"
 
-      - name: test
-        run: |
-          curl --location 'https://www.cambodiadaily.com/category/news' \
-           --header 'Accept: application/json, text/plain, */*' \
-           --header 'Content-Type: text/plain'
-
-  get-link:
-    name: Get link of ${{ matrix.site_name}}
+  run:
+    name: Run ${{ matrix.site_name}}
     runs-on: ubuntu-latest
-    needs: [prepare]
+    needs: [pre]
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        include: ${{ fromJson(needs.prepare.outputs.sites) }}
+        include: ${{ fromJson(needs.pre.outputs.sites) }}
     env:
       SITE_URL: ${{ matrix.site_url }}
 
@@ -71,3 +65,9 @@ jobs:
 
       - name: Run get link
         run: npm run start:cast
+
+  # after:
+  #   name: After
+  #   timeout-minutes: 1
+  #   runs-on: ubuntu-latest
+  #   steps:
