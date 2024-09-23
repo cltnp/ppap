@@ -1,4 +1,4 @@
-name: ":fire: Get links !"
+name: ":goal_net: cast net"
 
 on:
   schedule:
@@ -60,4 +60,4 @@ jobs:
       - run: npm install
 
       - name: Run get link
-        run: npm run start
+        run: npm run start:cast
