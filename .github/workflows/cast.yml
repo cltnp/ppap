@@ -45,7 +45,7 @@ jobs:
     env:
       SITE_URL: ${{ matrix.site_url }}
     outputs:
-      cast: ${{ steps.cast.outputs.value }}
+      result: ${{ steps.result.outputs.value }}
 
     steps:
       - name: Checkout crawl
@@ -79,7 +79,7 @@ jobs:
         run: npm run start:cast
 
       - name: Set output
-        id: cast
+        id: result
         run: echo "value=$(cat results/data.json)" >> $GITHUB_OUTPUT
 
   after:
