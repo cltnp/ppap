@@ -44,6 +44,8 @@ jobs:
         include: ${{ fromJson(needs.pre.outputs.sites) }}
     env:
       SITE_URL: ${{ matrix.site_url }}
+    outputs:
+      cast: ${{ steps.cast.outputs.value }}
 
     steps:
       - name: Checkout crawl
@@ -61,13 +63,28 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           cache: "npm"
           node-version-file: ".nvmrc"
-      - run: npm install
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run npm install
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
 
       - name: Run get link
         run: npm run start:cast
 
-  # after:
-  #   name: After
-  #   timeout-minutes: 1
-  #   runs-on: ubuntu-latest
-  #   steps:
+      - name: Set output
+        run: echo "value=$(cat results/data.json)" >> $GITHUB_OUTPUT
+
+  after:
+    name: After
+    needs: [run]
+    runs-on: ubuntu-latest
+    steps:
+      - name: after
+        run: echo ${{ needs.run.outputs.cast }}
