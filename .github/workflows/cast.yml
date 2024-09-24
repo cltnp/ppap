@@ -119,4 +119,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Test
-        run: ls
+        run: |
+          ls
+          matrix="$(cat * | jq -c --slurp .)"
+          echo $matrix
