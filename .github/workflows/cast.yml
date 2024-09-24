@@ -141,6 +141,14 @@ jobs:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Store links
+        run: |
+          export STORAGE_PATH=$(echo $(date +'%y%m'))
+          export FILE_NAME=$(echo $(date +'%d.json'))
+          node src/utils/action/storage.js
+        env:
+          STORAGE_FOLDER: links-data
+
       - name: test
         run: |
           echo '${{ steps.cast-data.outputs.value }}' >> ./results/data.json
