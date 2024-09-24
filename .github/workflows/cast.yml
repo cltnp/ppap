@@ -78,12 +78,12 @@ jobs:
       - name: Run get link
         run: npm run start:cast
 
-      - name: Generate file name
+      - name: Generate artifact file
         id: file-name
         run: |
           FILE_NAME=$(date +'CAST%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc'
-          run: echo "value=$FILE_NAME.json" >> $GITHUB_OUTPUT
           cp results/data.json $FILE_NAME.json
+          echo "value=$FILE_NAME.json" >> $GITHUB_OUTPUT
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
