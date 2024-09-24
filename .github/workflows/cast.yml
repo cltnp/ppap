@@ -81,7 +81,7 @@ jobs:
       - name: Generate artifact file
         id: file-name
         run: |
-          FILE_NAME=$(date +'CAST%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc'
+          FILE_NAME=$(echo $(date +'CAST%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc')
           cp results/data.json $FILE_NAME.json
           echo "value=$FILE_NAME.json" >> $GITHUB_OUTPUT
 
