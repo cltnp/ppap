@@ -99,4 +99,4 @@ jobs:
       #     echo $(date +'%Y/%m/%d.json')
 
       - name: after
-        run: echo ${{ fromJson(needs.run.outputs.matrix) }}
+        run: echo ${{ needs.run.outputs.matrix }}
