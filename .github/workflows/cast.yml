@@ -44,8 +44,6 @@ jobs:
         include: ${{ fromJson(needs.pre.outputs.sites) }}
     env:
       SITE_URL: ${{ matrix.site_url }}
-    # outputs:
-    #   matrix: ${{ steps.result.outputs.value }}
 
     steps:
       - name: Checkout crawl
@@ -92,34 +90,22 @@ jobs:
           path: ${{ steps.file-name.outputs.value }}.json
           if-no-files-found: warn
 
-      # - name: Set output
-      #   id: result
-      #   run: echo "value=$(cat results/data.json)" >> $GITHUB_OUTPUT
-
   after:
     name: After
     needs: [run]
     runs-on: ubuntu-latest
     steps:
+      - name: Download from artifact
+        uses: actions/download-artifact@v4
+
+      - name: Generate result file
+        run: cat */* | jq -c --slurp . >> result.json
+
+      - name: test
+        run: ls
+
       # - name: Checkout links data
       #   uses: actions/checkout@v4
       #   with:
       #     repository: ClutterNews/kh-links-data
       #     token: ${{ secrets.GH_PAT }}
-
-      # - name: after
-      #   run: |
-      #     # echo $(date +'%Y-%m-%d')
-      #     echo $(date +'%Y/%m/%d.json')
-
-      # - name: after
-      #   run: echo ${{ needs.run.outputs.matrix }}
-
-      - name: Download from artifact
-        uses: actions/download-artifact@v4
-
-      - name: Test
-        run: |
-          ls
-          matrix="$(cat */* | jq -c --slurp .)"
-          echo $matrix
