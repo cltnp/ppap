@@ -99,13 +99,19 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Generate result file
-        run: cat */* | jq -c --slurp . >> $(echo $(date +'CAST%y%m%d')).json
+        id: cast-data
+        run: echo "value=${cat */* | jq -c --slurp . | jq 'flatten[]'}" >> $GITHUB_OUTPUT
 
-      - name: Checkout links data
+      - name: Checkout crawl
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-links-data
+          repository: ClutterNews/nodejs-crawler
+          path: crawler
           token: ${{ secrets.GH_PAT }}
+        env:
+          CAST_DATA: ${{ steps.cast-data.outputs.value }}
 
       - name: test
-        run: ls
+        run: |
+          ls
+          echo ${{ steps.cast-data.outputs.value }}
