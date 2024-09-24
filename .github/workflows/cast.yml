@@ -44,8 +44,8 @@ jobs:
         include: ${{ fromJson(needs.pre.outputs.sites) }}
     env:
       SITE_URL: ${{ matrix.site_url }}
-    outputs:
-      ${{ matrix.code }}: ${{ steps.result.outputs.value }}
+    # outputs:
+    #   matrix: ${{ steps.result.outputs.value }}
 
     steps:
       - name: Checkout crawl
@@ -78,9 +78,16 @@ jobs:
       - name: Run get link
         run: npm run start:cast
 
-      - name: Set output
-        id: result
-        run: echo "value=$(cat results/data.json)" >> $GITHUB_OUTPUT
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ hashFiles('results/data.json') || 'none' }}
+          path: results/data.json
+          if-no-files-found: warn
+
+      # - name: Set output
+      #   id: result
+      #   run: echo "value=$(cat results/data.json)" >> $GITHUB_OUTPUT
 
   after:
     name: After
@@ -98,5 +105,11 @@ jobs:
       #     # echo $(date +'%Y-%m-%d')
       #     echo $(date +'%Y/%m/%d.json')
 
-      - name: after
-        run: echo ${{ needs.run.outputs }}
+      # - name: after
+      #   run: echo ${{ needs.run.outputs.matrix }}
+
+      - name: Download from artifact
+        uses: actions/download-artifact@v4
+
+      - name: Test
+        run: cd results && ls
