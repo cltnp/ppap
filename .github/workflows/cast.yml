@@ -78,11 +78,18 @@ jobs:
       - name: Run get link
         run: npm run start:cast
 
+      - name: Generate file name
+        id: file-name
+        run: |
+          FILE_NAME=$(date +'CAST%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc'
+          run: echo "value=$FILE_NAME.json" >> $GITHUB_OUTPUT
+          cp results/data.json $FILE_NAME.json
+
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ hashFiles('results/data.json') || 'none' }}
-          path: results/data.json
+          name: ${{ steps.file-name.outputs.value }}
+          path: ${{ steps.file-name.outputs.value }}
           if-no-files-found: warn
 
       # - name: Set output
