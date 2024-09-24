@@ -100,7 +100,10 @@ jobs:
 
       - name: Generate result file
         id: cast-data
-        run: echo "value=${cat */* | jq 'flatten[]'}" >> $GITHUB_OUTPUT
+        run: |
+          flattened_json=$(jq -sc 'map(.[])' */*)
+          cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
+          echo "value=$cleaned_json" >> $GITHUB_OUTPUT
 
       - name: Checkout crawl
         uses: actions/checkout@v4
