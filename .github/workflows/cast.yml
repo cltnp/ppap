@@ -143,5 +143,5 @@ jobs:
 
       - name: test
         run: |
-          echo ${{ steps.cast-data.outputs.value }} >> ./results/data.json
+          echo '${{ steps.cast-data.outputs.value }}' >> ./results/data.json
           cat ./results/data.json
