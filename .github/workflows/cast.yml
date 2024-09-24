@@ -87,5 +87,16 @@ jobs:
     needs: [run]
     runs-on: ubuntu-latest
     steps:
+      # - name: Checkout links data
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: ClutterNews/kh-links-data
+      #     token: ${{ secrets.GH_PAT }}
+
+      # - name: after
+      #   run: | 
+      #     # echo $(date +'%Y-%m-%d')
+      #     echo $(date +'%Y/%m/%d.json')
+
       - name: after
-        run: echo ${{ needs.run.outputs.result }}
+        run: echo ${{ needs.run.outputs }}
