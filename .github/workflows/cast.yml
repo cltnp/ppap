@@ -121,5 +121,5 @@ jobs:
       - name: Test
         run: |
           ls
-          matrix="$(cat * | jq -c --slurp .)"
+          matrix="$(cat */* | jq -c --slurp .)"
           echo $matrix
