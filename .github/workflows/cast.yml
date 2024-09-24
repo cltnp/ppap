@@ -99,13 +99,13 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Generate result file
-        run: cat */* | jq -c --slurp . >> result.json
+        run: cat */* | jq -c --slurp . >> $(echo $(date +'CAST%y%m%d')).json
+
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-links-data
+          token: ${{ secrets.GH_PAT }}
 
       - name: test
         run: ls
-
-      # - name: Checkout links data
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: ClutterNews/kh-links-data
-      #     token: ${{ secrets.GH_PAT }}
