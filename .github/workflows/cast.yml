@@ -100,18 +100,23 @@ jobs:
 
       - name: Generate result file
         id: cast-data
-        run: echo "value=${cat */* | jq -c --slurp . | jq 'flatten[]'}" >> $GITHUB_OUTPUT
+        run: echo "value=${cat */* | jq 'flatten[]'}" >> $GITHUB_OUTPUT
 
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/nodejs-crawler
-          path: crawler
           token: ${{ secrets.GH_PAT }}
-        env:
-          CAST_DATA: ${{ steps.cast-data.outputs.value }}
+
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-links-data
+          path: kh-links-data
+          token: ${{ secrets.GH_PAT }}
 
       - name: test
         run: |
           ls
-          echo ${{ steps.cast-data.outputs.value }}
+          echo ${{ steps.cast-data.outputs.value }} >> result.txt
+          cat result.txt
