@@ -26,6 +26,24 @@ jobs:
           repository: ClutterNews/nodejs-crawler
           token: ${{ secrets.GH_PAT }}
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run npm install
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
       - name: Check list website
         id: sites
         run: echo "value=$(node src/utils/action/websites.js)" >> $GITHUB_OUTPUT
@@ -52,9 +70,6 @@ jobs:
           repository: ClutterNews/nodejs-crawler
           token: ${{ secrets.GH_PAT }}
 
-      - name: Echo value
-        run: echo "${{ toJson(matrix) }}"
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -63,15 +78,10 @@ jobs:
           node-version-file: ".nvmrc"
 
       - name: Cache node_modules
-        id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Run npm install
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
 
       - name: Run get link
         run: npm run start:cast
@@ -115,11 +125,23 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-links-data
-          path: kh-links-data
+          path: links-data
           token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: test
         run: |
-          ls
-          echo ${{ steps.cast-data.outputs.value }} >> result.txt
-          cat result.txt
+          echo ${{ steps.cast-data.outputs.value }} >> ./results/data.json
+          cat ./results/data.json
