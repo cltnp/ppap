@@ -45,7 +45,7 @@ jobs:
     env:
       SITE_URL: ${{ matrix.site_url }}
     outputs:
-      matrix: ${{ steps.result.outputs.value }}
+      ${{ matrix.code }}: ${{ steps.result.outputs.value }}
 
     steps:
       - name: Checkout crawl
@@ -99,4 +99,4 @@ jobs:
       #     echo $(date +'%Y/%m/%d.json')
 
       - name: after
-        run: echo ${{ needs.run.outputs.matrix }}
+        run: echo ${{ needs.run.outputs }}
