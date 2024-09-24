@@ -143,6 +143,7 @@ jobs:
 
       - name: Store links
         run: |
+          echo '${{ steps.cast-data.outputs.value }}' >> ./results/data.json
           export STORAGE_PATH=$(echo $(date +'%y%m'))
           export FILE_NAME=$(echo $(date +'%d.json'))
           node src/utils/action/storage.js
