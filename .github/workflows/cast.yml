@@ -8,9 +8,9 @@ on:
     types:
       - cast
 
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   pre:
