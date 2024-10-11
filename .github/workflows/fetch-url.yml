@@ -1,16 +1,16 @@
 name: ":goal_net: cast"
 
 on:
-  schedule:
-    - cron: 0/5 * * * *
+  # schedule:
+  #   - cron: 0/5 * * * *
 
   repository_dispatch:
     types:
       - cast
 
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   pre:
@@ -46,7 +46,7 @@ jobs:
 
       - name: Check list website
         id: sites
-        run: echo "value=$(node src/utils/action/websites.js)" >> $GITHUB_OUTPUT
+        run: echo "value=$(node src/functions/support/websites.js)" >> $GITHUB_OUTPUT
 
       - name: Echo value
         run: echo "${{ steps.sites.outputs.value }}"
@@ -84,13 +84,15 @@ jobs:
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run get link
-        run: npm run start:cast
+        run: npm run url
+        env:
+          SITE_CODE: ${{ matrix.code }}
 
       - name: Generate artifact file
         id: file-name
         run: |
-          FILE_NAME=$(echo $(date +'CAST%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc')
-          cp results/data.json $FILE_NAME.json
+          FILE_NAME=$(echo $(date +'URL%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc')
+          cp .temp/data.json $FILE_NAME.json
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
       - name: Upload to artifact
@@ -107,54 +109,59 @@ jobs:
     steps:
       - name: Download from artifact
         uses: actions/download-artifact@v4
-
-      - name: Generate result file
-        id: cast-data
-        run: |
-          flattened_json=$(jq -sc 'map(.[])' */*)
-          cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
-          echo "value=$cleaned_json" >> $GITHUB_OUTPUT
-
-      - name: Checkout crawl
-        uses: actions/checkout@v4
         with:
-          repository: ClutterNews/nodejs-crawler
-          token: ${{ secrets.GH_PAT }}
+          merge-multiple: true
 
-      - name: Checkout links data
-        uses: actions/checkout@v4
-        with:
-          repository: ClutterNews/kh-links-data
-          path: links-data
-          token: ${{ secrets.GH_PAT }}
+      - name: Test
+        run: ls
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
-          cache: "npm"
-          node-version-file: ".nvmrc"
+      # - name: Generate result file
+      #   id: cast-data
+      #   run: |
+      #     flattened_json=$(jq -sc 'map(.[])' */*)
+      #     cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
+      #     echo "value=$cleaned_json" >> $GITHUB_OUTPUT
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+      # - name: Checkout crawl
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: ClutterNews/nodejs-crawler
+      #     token: ${{ secrets.GH_PAT }}
 
-      - name: Store links
-        run: |
-          echo '${{ steps.cast-data.outputs.value }}' >> ./results/data.json
-          export STORAGE_PATH=$(echo $(date +'%y/%m'))
-          export FILE_NAME=$(echo $(date +'%d.json'))
-          node src/utils/action/storage.js
-        env:
-          STORAGE_FOLDER: links-data
+      # - name: Checkout links data
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: ClutterNews/kh-links-data
+      #     path: links-data
+      #     token: ${{ secrets.GH_PAT }}
 
-      - name: Push
-        working-directory: links-data
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Cast Links'
-          git push origin main -f
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     token: ${{ secrets.GH_PAT }}
+      #     cache: "npm"
+      #     node-version-file: ".nvmrc"
+
+      # - name: Cache node_modules
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: node_modules
+      #     key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      # - name: Store links
+      #   run: |
+      #     echo '${{ steps.cast-data.outputs.value }}' >> ./results/data.json
+      #     export STORAGE_PATH=$(echo $(date +'%y/%m'))
+      #     export FILE_NAME=$(echo $(date +'%d.json'))
+      #     node src/utils/action/storage.js
+      #   env:
+      #     STORAGE_FOLDER: links-data
+
+      # - name: Push
+      #   working-directory: links-data
+      #   run: |
+      #     git config user.name "GitHub Actions"
+      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     git add -A
+      #     git diff-index --quiet HEAD || git commit -m ':white_check_mark: Cast Links'
+      #     git push origin main -f
