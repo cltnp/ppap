@@ -1,4 +1,4 @@
-name: ":goal_net: cast"
+name: "Get Link"
 
 on:
   # schedule:
@@ -6,7 +6,7 @@ on:
 
   repository_dispatch:
     types:
-      - cast
+      - link
 
   push:
     branches:
@@ -84,14 +84,14 @@ jobs:
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run get link
-        run: npm run url
+        run: npm run get:url
         env:
           SITE_CODE: ${{ matrix.code }}
 
       - name: Generate artifact file
         id: file-name
         run: |
-          FILE_NAME=$(echo $(date +'URL%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc')
+          FILE_NAME=$(echo $(date +'ART%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc')
           cp .temp/data.json $FILE_NAME.json
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
@@ -112,41 +112,38 @@ jobs:
         with:
           merge-multiple: true
 
-      - name: Test
-        run: ls
+      - name: Generate result file
+        id: cast-data
+        run: |
+          flattened_json=$(jq -sc 'map(.[])' */*)
+          cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
+          echo "value=$cleaned_json" >> $GITHUB_OUTPUT
 
-      # - name: Generate result file
-      #   id: cast-data
-      #   run: |
-      #     flattened_json=$(jq -sc 'map(.[])' */*)
-      #     cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
-      #     echo "value=$cleaned_json" >> $GITHUB_OUTPUT
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-crawler
+          token: ${{ secrets.GH_PAT }}
 
-      # - name: Checkout crawl
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: ClutterNews/nodejs-crawler
-      #     token: ${{ secrets.GH_PAT }}
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-links-data
+          path: links-data
+          token: ${{ secrets.GH_PAT }}
 
-      # - name: Checkout links data
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: ClutterNews/kh-links-data
-      #     path: links-data
-      #     token: ${{ secrets.GH_PAT }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
 
-      # - name: Setup Node
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     token: ${{ secrets.GH_PAT }}
-      #     cache: "npm"
-      #     node-version-file: ".nvmrc"
-
-      # - name: Cache node_modules
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: node_modules
-      #     key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       # - name: Store links
       #   run: |
