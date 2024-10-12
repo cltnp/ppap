@@ -22,5 +22,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Cast Links'
+          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Reset Data'
           git push origin main -f
