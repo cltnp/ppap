@@ -9,7 +9,6 @@ on:
   repository_dispatch:
     types:
       - meta
-
   push:
     branches:
       - main
@@ -26,6 +25,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/nodejs-crawler
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-links-data
+          path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node
