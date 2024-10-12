@@ -48,7 +48,9 @@ jobs:
 
       - name: Get list created articles
         id: created-articles
-        run: echo "value=$(node src/functions/getCreatedArticles.js)" >> $GITHUB_OUTPUT
+        run: |
+          node src/functions/getCreatedArticles.js
+          echo "value=$(cat .temp/createdArticles.json)" >> $GITHUB_OUTPUT
 
       - name: Echo value
         run: echo "${{ steps.created-articles.outputs.value }}"
