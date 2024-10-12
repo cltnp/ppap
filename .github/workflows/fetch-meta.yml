@@ -9,6 +9,7 @@ on:
   repository_dispatch:
     types:
       - meta
+
   push:
     branches:
       - main
@@ -62,7 +63,7 @@ jobs:
         run: echo "${{ steps.created-articles.outputs.value }}"
 
   run:
-    name: Run ${{ matrix.site_name}}
+    name: Run ${{ matrix.code}}
     runs-on: ubuntu-latest
     needs: [pre]
     continue-on-error: true
