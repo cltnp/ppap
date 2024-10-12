@@ -59,4 +59,4 @@ jobs:
           echo "value=$(cat .temp/createdArticles.json)" >> $GITHUB_OUTPUT
 
       - name: Echo value
-        run: echo ${{ steps.created-articles.outputs.value }}
+        run: echo "${{ steps.created-articles.outputs.value }}"
