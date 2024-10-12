@@ -148,7 +148,7 @@ jobs:
       - name: Store links
         run: |
           echo '${{ steps.cast-data.outputs.value }}' > ./.temp/articles.json
-          node src/utils/action/storage.js
+          node src/functions/support/insertArticles.js
 
       - name: Push
         working-directory: src/databases/data
