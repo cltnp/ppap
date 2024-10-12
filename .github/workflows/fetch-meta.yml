@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 1
     runs-on: ubuntu-latest
     outputs:
-      sites: ${{ steps.sites.outputs.value }}
+      created-articles: ${{ steps.created-articles.outputs.value }}
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -59,4 +59,4 @@ jobs:
           echo "value=$(cat .temp/createdArticles.json)" >> $GITHUB_OUTPUT
 
       - name: Echo value
-        run: echo "${{ steps.created-articles.outputs.value }}"
+        run: echo ${{ steps.created-articles.outputs.value }}
