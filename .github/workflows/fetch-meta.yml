@@ -1,0 +1,56 @@
+name: "Get Meta"
+
+on:
+  workflow_dispatch:
+
+  # schedule:
+  #   - cron: 0/5 * * * *
+
+  repository_dispatch:
+    types:
+      - meta
+
+  push:
+    branches:
+      - main
+
+jobs:
+  pre:
+    name: Pre
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    outputs:
+      sites: ${{ steps.sites.outputs.value }}
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-crawler
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run npm install
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Get list created articles
+        id: created-articles
+        run: |
+          node src/functions/getCreatedArticles.js
+          echo "value=$(node .temp/createdArticles.json)" >> $GITHUB_OUTPUT
+
+      - name: Echo value
+        run: echo "${{ steps.created-articles.outputs.value }}"
