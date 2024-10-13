@@ -94,7 +94,7 @@ jobs:
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run meta
-        run: node npm run get:meta
+        run: echo $CREATED_ARTICLE && node npm run get:meta
         env:
           CREATED_ARTICLE: ${{ toJson(matrix) }}
 
