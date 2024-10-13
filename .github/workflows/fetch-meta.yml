@@ -96,7 +96,7 @@ jobs:
       - name: Run meta
         run: node npm run get:meta
         env:
-          CREATED_ARTICLE: ${{ fromJson(matrix) }}
+          CREATED_ARTICLE: ${{ toJson(matrix) }}
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
