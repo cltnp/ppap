@@ -127,13 +127,6 @@ jobs:
           repository: ClutterNews/nodejs-crawler
           token: ${{ secrets.GH_PAT }}
 
-      - name: Checkout links data
-        uses: actions/checkout@v4
-        with:
-          repository: ClutterNews/kh-links-data
-          path: src/databases/data
-          token: ${{ secrets.GH_PAT }}
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -146,6 +139,13 @@ jobs:
         with:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-links-data
+          path: src/databases/data
+          token: ${{ secrets.GH_PAT }}
 
       - name: Store links
         run: |
