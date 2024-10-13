@@ -70,7 +70,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        include: ${{ fromJson(needs.pre.outputs.created-articles) }}
+        include: ${{ toJson(needs.pre.outputs.created-articles) }}
 
     steps:
       - name: Checkout crawl
