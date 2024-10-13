@@ -150,8 +150,8 @@ jobs:
 
       - name: Store links
         run: |
-          echo '${{ steps.get-meta.outputs.value }}' > ./.temp/articles.json
-          node src/functions/articlesMeta.js
+          echo '${{ steps.get-meta.outputs.value }}' > ./.temp/articlesMeta.json
+          node src/functions/updateMetaArticle.js
 
       - name: Push
         working-directory: src/databases/data
