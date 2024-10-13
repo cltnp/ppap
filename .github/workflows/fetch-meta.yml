@@ -118,7 +118,7 @@ jobs:
       - name: Generate result file
         id: get-meta
         run: |
-          flattened_json=$(jq -sc 'map(.[])' *)
+          flattened_json=$(jq -sc 'map(.)' *)
           cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
           echo "value=$cleaned_json" >> $GITHUB_OUTPUT
 
