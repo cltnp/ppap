@@ -70,12 +70,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        include: ${{ toJson(needs.pre.outputs.created-articles) }}
+        include: ${{ fromJson(needs.pre.outputs.created-articles) }}
 
     steps:
-      - name: Test
-        run: echo ${{ matrix }}
-
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
@@ -99,7 +96,7 @@ jobs:
       - name: Run meta
         run: node npm run get:meta
         env:
-          CREATED_ARTICLE: ${{ matrix }}
+          CREATED_ARTICLE: ${{ fromJson(matrix) }}
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
