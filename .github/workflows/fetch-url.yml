@@ -147,6 +147,10 @@ jobs:
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
+      - name: Pull again
+        working-directory: src/databases/data
+        run: git pull origin main
+
       - name: Store links
         run: |
           echo '${{ steps.get-link.outputs.value }}' > ./.temp/articles.json
