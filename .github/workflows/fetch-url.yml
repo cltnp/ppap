@@ -156,7 +156,7 @@ jobs:
           echo '${{ steps.get-link.outputs.value }}' > ./.temp/articles.json
           node src/functions/insertArticles.js
 
-      - name: Check git diff-index for changes
+      - name: Check git data changes
         id: is_data_change
         working-directory: src/databases/data
         continue-on-error: true
