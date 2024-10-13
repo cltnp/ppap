@@ -160,3 +160,11 @@ jobs:
           git add -A
           git diff-index --quiet HEAD || git commit -m ':white_check_mark: Get Links'
           git push origin main -f
+
+      - name: Trgger Meta
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://api.github.com/repos/clnpp/ap/dispatches"
+          method: "POST"
+          customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
+          data: '{"event_type": "meta"}'
