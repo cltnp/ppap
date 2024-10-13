@@ -63,7 +63,7 @@ jobs:
         run: echo "${{ steps.created-articles.outputs.value }}"
 
   run:
-    name: Run ${{ matrix.code}}
+    name: Run ${{ matrix.code }}
     if: needs.pre.outputs.created-articles != '[]'
     runs-on: ubuntu-latest
     needs: [pre]
