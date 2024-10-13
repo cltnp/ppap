@@ -64,6 +64,7 @@ jobs:
 
   run:
     name: Run ${{ matrix.code}}
+    if: needs.pre.outputs.created-articles != '[]'
     runs-on: ubuntu-latest
     needs: [pre]
     continue-on-error: true
@@ -147,7 +148,7 @@ jobs:
           repository: ClutterNews/kh-links-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
-          
+
       - name: Store links
         run: |
           echo '${{ steps.get-meta.outputs.value }}' > ./.temp/articlesMeta.json

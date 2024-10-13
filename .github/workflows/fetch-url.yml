@@ -55,7 +55,6 @@ jobs:
 
   run:
     name: Run ${{ matrix.site_name}}
-    if: needs.pre.outputs.sites != '[]'
     runs-on: ubuntu-latest
     needs: [pre]
     continue-on-error: true
