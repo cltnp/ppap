@@ -78,3 +78,29 @@ jobs:
         with:
           repository: ClutterNews/nodejs-crawler
           token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run meta
+        run: node npm run get:meta
+        env:
+          CREATED_ARTICLE: ${{ matrix }}
+
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.code }}
+          path: .temp/${{ matrix.code }}.json
+          if-no-files-found: warn
