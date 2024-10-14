@@ -40,11 +40,11 @@ jobs:
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run npm install
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Browsers install chrome
-        run: npx puppeteer browsers install chrome
+      # - name: Browsers install chrome
+      #   run: npx puppeteer browsers install chrome
 
       - name: Checkout links data
         uses: actions/checkout@v4
