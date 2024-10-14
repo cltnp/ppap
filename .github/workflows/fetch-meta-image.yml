@@ -118,18 +118,22 @@ jobs:
           mv image.temp $FILE_NAME
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
-      - name: Test
-        run: cd .temp && ls
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.code }}
+          path: .temp/${{ steps.file_name.outputs.value }}
+          if-no-files-found: warn
 
-  # after:
-  #   name: After
-  #   needs: [run]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Download from artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         merge-multiple: true
+  after:
+    name: After
+    needs: [run]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download from artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
 
   #     - name: Generate result file
   #       id: get-meta
