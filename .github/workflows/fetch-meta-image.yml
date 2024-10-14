@@ -105,20 +105,18 @@ jobs:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Run meta
-        run: echo $CREATED_ARTICLE && npm run get:meta
-        env:
-          CREATED_ARTICLE: ${{ toJson(matrix) }}
-
       - name: Download image
         working-directory: .temp
         run: curl -o image.temp ${{ matrix.image }}
 
       - name: Rename image with detected extension
         working-directory: .temp
+        id: file_name
         run: |
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
-          mv image.temp ${{ matrix.code }}.$EXT
+          FILE_NAME=${{ matrix.code }}.$EXT
+          mv image.temp $FILE_NAME
+          echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
       - name: Test
         run: cd .temp && ls
