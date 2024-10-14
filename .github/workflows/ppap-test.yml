@@ -1,39 +1,39 @@
-name: PPAP test
+# name: PPAP test
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  ppap-sync:
-    name: PPAP sync
-    timeout-minutes: 1
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: ClutterNews/nodejs-crawler
-          token: ${{ secrets.GH_PAT }}
+# jobs:
+#   ppap-sync:
+#     name: PPAP sync
+#     timeout-minutes: 1
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           repository: ClutterNews/nodejs-crawler
+#           token: ${{ secrets.GH_PAT }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
-          cache: "npm"
-          node-version-file: ".nvmrc"
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           token: ${{ secrets.GH_PAT }}
+#           cache: "npm"
+#           node-version-file: ".nvmrc"
 
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+#       - name: Cache node_modules
+#         id: cache-node-modules
+#         uses: actions/cache@v4
+#         with:
+#           path: node_modules
+#           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Run npm install
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+#       - name: Run npm install
+#         if: steps.cache-node-modules.outputs.cache-hit != 'true'
+#         run: npm install
 
-      - name: Run test
-        run: node src/functions/githubAuth.js
+#       - name: Run test
+#         run: node src/functions/githubAuth.js
