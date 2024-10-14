@@ -135,6 +135,9 @@ jobs:
         with:
           merge-multiple: true
 
+      - name: test
+        run: ls
+
   #     - name: Generate result file
   #       id: get-meta
   #       run: |
