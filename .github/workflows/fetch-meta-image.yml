@@ -54,6 +54,16 @@ jobs:
         id: created-articles
         run: node src/functions/githubAuth.js
 
+      - name: Push
+        working-directory: src/databases/data
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Get Links'
+          git push origin main -f
+
+
   # run:
   #   name: Run ${{ matrix.code }}
   #   if: needs.pre.outputs.created-articles != '[]'
