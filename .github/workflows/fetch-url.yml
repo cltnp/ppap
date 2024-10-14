@@ -1,4 +1,4 @@
-name: "Get Link"
+name: Get Link
 
 on:
   workflow_dispatch:

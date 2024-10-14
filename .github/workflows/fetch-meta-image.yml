@@ -1,0 +1,160 @@
+name: Get Meta Image
+
+on:
+  workflow_dispatch:
+
+  repository_dispatch:
+    types:
+      - meta-image
+
+  push:
+    branches:
+      - main
+
+jobs:
+  pre:
+    name: Pre
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    outputs:
+      created-articles: ${{ steps.created-articles.outputs.value }}
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-crawler
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-links-data
+          path: src/databases/data
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run npm install
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Check auth github
+        id: created-articles
+        run: node src/functions/githubAuth.js
+
+  # run:
+  #   name: Run ${{ matrix.code }}
+  #   if: needs.pre.outputs.created-articles != '[]'
+  #   runs-on: ubuntu-latest
+  #   needs: [pre]
+  #   continue-on-error: true
+  #   strategy:
+  #     fail-fast: true
+  #     matrix:
+  #       include: ${{ fromJson(needs.pre.outputs.created-articles) }}
+
+  #   steps:
+  #     - name: Checkout crawl
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: ClutterNews/nodejs-crawler
+  #         token: ${{ secrets.GH_PAT }}
+
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         token: ${{ secrets.GH_PAT }}
+  #         cache: "npm"
+  #         node-version-file: ".nvmrc"
+
+  #     - name: Cache node_modules
+  #       id: cache-node-modules
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: node_modules
+  #         key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+  #     - name: Run meta
+  #       run: echo $CREATED_ARTICLE && npm run get:meta
+  #       env:
+  #         CREATED_ARTICLE: ${{ toJson(matrix) }}
+
+  #     - name: Upload to artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ matrix.code }}
+  #         path: .temp/${{ matrix.code }}.json
+  #         if-no-files-found: warn
+
+  # after:
+  #   name: After
+  #   needs: [run]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download from artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         merge-multiple: true
+
+  #     - name: Generate result file
+  #       id: get-meta
+  #       run: |
+  #         flattened_json=$(jq -sc 'map(.)' *)
+  #         cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
+  #         echo "value=$cleaned_json" >> $GITHUB_OUTPUT
+
+  #     - name: Checkout crawl
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: ClutterNews/nodejs-crawler
+  #         token: ${{ secrets.GH_PAT }}
+
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         token: ${{ secrets.GH_PAT }}
+  #         cache: "npm"
+  #         node-version-file: ".nvmrc"
+
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: node_modules
+  #         key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+  #     - name: Checkout links data
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: ClutterNews/kh-links-data
+  #         path: src/databases/data
+  #         token: ${{ secrets.GH_PAT }}
+
+  #     - name: Pull again
+  #       working-directory: src/databases/data
+  #       run: git pull origin main
+
+  #     - name: Store links
+  #       run: |
+  #         echo '${{ steps.get-meta.outputs.value }}' > ./.temp/articlesMeta.json
+  #         node src/functions/updateMetaArticle.js
+
+  #     - name: Push
+  #       working-directory: src/databases/data
+  #       run: |
+  #         git config user.name "GitHub Actions"
+  #         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+  #         git add -A
+  #         git diff-index --quiet HEAD || git commit -m ':white_check_mark: Get Links'
+  #         git push origin main -f
