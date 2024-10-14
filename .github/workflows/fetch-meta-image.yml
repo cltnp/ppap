@@ -111,9 +111,11 @@ jobs:
           CREATED_ARTICLE: ${{ toJson(matrix) }}
 
       - name: Download image
-        run: curl -o .temp/image.temp ${{ matrix.image }}
+        working-directory: .temp
+        run: curl -o image.temp ${{ matrix.image }}
 
       - name: Rename image with detected extension
+        working-directory: .temp
         run: |
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
           mv image.temp ${{ matrix.code }}.$EXT
