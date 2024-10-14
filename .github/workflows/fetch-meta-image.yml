@@ -15,7 +15,7 @@ jobs:
   pre:
     name: Pre
     timeout-minutes: 1
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       created-articles: ${{ steps.created-articles.outputs.value }}
     steps:
