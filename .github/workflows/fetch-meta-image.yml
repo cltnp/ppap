@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 1
     runs-on: ubuntu-latest
     outputs:
-      created-articles: ${{ steps.created-articles.outputs.value }}
+      articles-without-github-image: ${{ steps.articles-without-github-image.outputs.value }}
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -67,49 +67,59 @@ jobs:
           git diff-index --quiet HEAD || git commit -m ':white_check_mark: Get Links'
           git push origin main -f
 
-  # run:
-  #   name: Run ${{ matrix.code }}
-  #   if: needs.pre.outputs.created-articles != '[]'
-  #   runs-on: ubuntu-latest
-  #   needs: [pre]
-  #   continue-on-error: true
-  #   strategy:
-  #     fail-fast: true
-  #     matrix:
-  #       include: ${{ fromJson(needs.pre.outputs.created-articles) }}
+      - name: Get articles without github image
+        id: articles-without-github-image
+        run: |
+          node src/functions/getArticlesWithoutGitHubImage.js                   
+          echo "value=$(cat .temp/articlesWithoutGitHubImage.json)" >> $GITHUB_OUTPUT
 
-  #   steps:
-  #     - name: Checkout crawl
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: ClutterNews/nodejs-crawler
-  #         token: ${{ secrets.GH_PAT }}
+  run:
+    name: Run ${{ matrix.code }}
+    if: needs.pre.outputs.articles-without-github-image != '[]'
+    runs-on: ubuntu-latest
+    needs: [pre]
+    continue-on-error: true
+    strategy:
+      fail-fast: true
+      matrix:
+        include: ${{ fromJson(needs.pre.outputs.articles-without-github-image) }}
 
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         token: ${{ secrets.GH_PAT }}
-  #         cache: "npm"
-  #         node-version-file: ".nvmrc"
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-crawler
+          token: ${{ secrets.GH_PAT }}
 
-  #     - name: Cache node_modules
-  #       id: cache-node-modules
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: node_modules
-  #         key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: "npm"
+          node-version-file: ".nvmrc"
 
-  #     - name: Run meta
-  #       run: echo $CREATED_ARTICLE && npm run get:meta
-  #       env:
-  #         CREATED_ARTICLE: ${{ toJson(matrix) }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
-  #     - name: Upload to artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ matrix.code }}
-  #         path: .temp/${{ matrix.code }}.json
-  #         if-no-files-found: warn
+      - name: Run meta
+        run: echo $CREATED_ARTICLE && npm run get:meta
+        env:
+          CREATED_ARTICLE: ${{ toJson(matrix) }}
+
+      - name: Download image
+        run: curl -o .temp/image.temp ${{ matrix.image }}
+
+      - name: Rename image with detected extension
+        run: |
+          EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
+          mv image.temp ${{ matrix.code }}.$EXT
+
+      - name: Test
+        run: cd .temp && ls
 
   # after:
   #   name: After
