@@ -114,7 +114,7 @@ jobs:
         id: file_name
         run: |
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
-          FILE_NAME=${{ matrix.code }}.$EXT
+          FILE_NAME=$(echo -n "${{ matrix.image }}" | base64).$EXT
           mv image.temp $FILE_NAME
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
@@ -127,7 +127,7 @@ jobs:
 
   after:
     name: After
-    needs: [run]
+    needs: [pre, run]
     runs-on: ubuntu-latest
     steps:
       - name: Download from artifact
