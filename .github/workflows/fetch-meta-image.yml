@@ -116,7 +116,7 @@ jobs:
           echo 1
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
           echo 2
-          FILE_NAME=$(echo -n '${{ matrix.image }}' | base64).$EXT
+          FILE_NAME=$(echo -n '${{ matrix.image }}' | base64 | xargs).$EXT
           echo 3
           mv image.temp "$FILE_NAME"
           echo 4
