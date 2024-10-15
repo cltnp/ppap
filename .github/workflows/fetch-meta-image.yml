@@ -114,7 +114,7 @@ jobs:
         id: file_name
         run: |
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
-          FILE_NAME=$(echo -n "${{ matrix.image }}" | base64).$EXT
+          FILE_NAME=$(echo -n "${{ matrix.image }}" | md5sum | awk '{ print $1 }' | xargs).$EXT
           mv image.temp "$FILE_NAME"
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
