@@ -113,10 +113,15 @@ jobs:
         working-directory: .temp
         id: file_name
         run: |
+          echo 1
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
+          echo 2
           FILE_NAME=$(echo -n '${{ matrix.image }}' | base64).$EXT
+          echo 3
           mv image.temp "$FILE_NAME"
+          echo 4
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
+          echo 5
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
