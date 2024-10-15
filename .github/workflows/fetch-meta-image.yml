@@ -74,7 +74,7 @@ jobs:
           echo "value=$(cat .temp/articlesWithoutGitHubImage.json)" >> $GITHUB_OUTPUT
 
   run:
-    name: Meta image ${{ matrix.code }}
+    name: Run ${{ matrix.code }}
     if: needs.pre.outputs.articles-without-github-image != '[]'
     runs-on: ubuntu-latest
     needs: [pre]
@@ -114,8 +114,8 @@ jobs:
         id: file_name
         run: |
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
-          FILE_NAME=$(echo -n "${{ matrix.image }}" | base64).$EXT
-          mv image.temp "$FILE_NAME"
+          FILE_NAME=${{ matrix.code }}.$EXT
+          mv image.temp $FILE_NAME
           echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
       - name: Upload to artifact
