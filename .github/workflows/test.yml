@@ -9,7 +9,7 @@ on:
 jobs:
   pre:
     name: Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -34,5 +34,5 @@ jobs:
       - name: Run npm install
         run: npm install
 
-      - name: Check auth github
+      - name: Running
         run: node src/functions/test.js
