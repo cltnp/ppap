@@ -78,8 +78,6 @@ jobs:
     if: needs.pre.outputs.articles-without-github-image != '[]'
     runs-on: ubuntu-latest
     needs: [pre]
-    outputs:
-      file-name: ${{ steps.file_name.outputs.value }}
     continue-on-error: true
     strategy:
       fail-fast: true
@@ -138,7 +136,7 @@ jobs:
           merge-multiple: true
 
       - name: test
-        run: echo ${{ steps.run.outputs.file-name }}
+        run: echo ${{ steps.pre.outputs.articles-without-github-image }}
 
   #     - name: Generate result file
   #       id: get-meta
