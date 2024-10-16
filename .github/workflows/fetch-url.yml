@@ -181,7 +181,7 @@ jobs:
         if: steps.is_data_change.outputs.value == 'true'
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://api.github.com/repos/clnpp/ap/dispatches"
+          url: "https://api.github.com/repos/cltnp/ppap/dispatches"
           method: "POST"
           customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
           data: '{"event_type": "meta"}'
