@@ -171,7 +171,7 @@ jobs:
         working-directory: src/databases/data
         run: git pull origin main
 
-      - name: test
+      - name: Running
         run: node src/functions/githubUploadMetaImage.js
         env:
           ARTICLES_WITHOUT_GITHUB_IMAGE: '${{ needs.pre.outputs.articles_without_github_image }}'
