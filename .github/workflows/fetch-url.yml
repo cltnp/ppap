@@ -25,7 +25,7 @@ jobs:
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/nodejs-crawler
+          repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node
@@ -69,7 +69,7 @@ jobs:
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/nodejs-crawler
+          repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node
@@ -124,7 +124,7 @@ jobs:
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/nodejs-crawler
+          repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node
