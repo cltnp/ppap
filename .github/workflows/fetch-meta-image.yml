@@ -7,10 +7,6 @@ on:
     types:
       - meta-image
 
-  push:
-    branches:
-      - main
-
 jobs:
   pre:
     name: Pre
@@ -153,9 +149,6 @@ jobs:
       - name: Run npm install
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
-
-      # - name: Run npx puppeteer
-      #   run: npx puppeteer browsers install chrome
 
       - name: Download from artifact
         uses: actions/download-artifact@v4
