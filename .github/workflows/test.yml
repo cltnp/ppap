@@ -2,9 +2,9 @@ name: Test
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  # push:
+    # branches:
+    #   - main
 
 jobs:
   pre:
@@ -17,7 +17,7 @@ jobs:
           repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
-      - name: Checkout links data
+      - name: Checkout data
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-data

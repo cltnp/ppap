@@ -43,7 +43,7 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Checkout links data
+      - name: Checkout data
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-data
@@ -163,7 +163,7 @@ jobs:
           path: .temp
           merge-multiple: true
 
-      - name: Checkout links data
+      - name: Checkout data
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-data

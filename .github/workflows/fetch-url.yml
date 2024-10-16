@@ -140,7 +140,7 @@ jobs:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Checkout links data
+      - name: Checkout data
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-data

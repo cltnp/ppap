@@ -25,7 +25,7 @@ jobs:
           repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
-      - name: Checkout links data
+      - name: Checkout data
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-data
@@ -139,7 +139,7 @@ jobs:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Checkout links data
+      - name: Checkout data
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/kh-data
