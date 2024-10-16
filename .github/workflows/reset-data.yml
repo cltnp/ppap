@@ -11,7 +11,7 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-links-data
+          repository: ClutterNews/kh-data
           token: ${{ secrets.GH_PAT }}
 
       - name: Reset

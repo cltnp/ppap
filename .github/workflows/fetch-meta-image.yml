@@ -46,7 +46,7 @@ jobs:
       - name: Checkout links data
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-links-data
+          repository: ClutterNews/kh-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
@@ -167,7 +167,7 @@ jobs:
   #     - name: Checkout links data
   #       uses: actions/checkout@v4
   #       with:
-  #         repository: ClutterNews/kh-links-data
+  #         repository: ClutterNews/kh-data
   #         path: src/databases/data
   #         token: ${{ secrets.GH_PAT }}
 
