@@ -128,7 +128,7 @@ jobs:
   after:
     name: After
     needs: [pre, run]
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -151,11 +151,11 @@ jobs:
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run npm install
-        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Run npx puppeteer
-        run: npx puppeteer browsers install chrome
+      # - name: Run npx puppeteer
+      #   run: npx puppeteer browsers install chrome
 
       - name: Download from artifact
         uses: actions/download-artifact@v4
