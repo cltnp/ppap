@@ -24,7 +24,6 @@ jobs:
         with:
           repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
-          lfs: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -50,7 +49,6 @@ jobs:
           repository: ClutterNews/kh-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
-          lfs: true
 
       - name: Pull again
         working-directory: src/databases/data
@@ -92,7 +90,6 @@ jobs:
         with:
           repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
-          lfs: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
