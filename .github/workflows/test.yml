@@ -17,6 +17,13 @@ jobs:
           repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
+      - name: Checkout links data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-data
+          path: src/databases/data
+          token: ${{ secrets.GH_PAT }}
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
