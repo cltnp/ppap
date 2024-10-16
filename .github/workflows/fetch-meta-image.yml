@@ -7,9 +7,9 @@ on:
     types:
       - meta-image
 
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   pre:
