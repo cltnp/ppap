@@ -178,7 +178,7 @@ jobs:
           git push origin main -f
 
       - name: Trigger Meta
-        if: steps.is_data_change.outputs.value == 'true'
+        # if: steps.is_data_change.outputs.value == 'true'
         uses: fjogeleit/http-request-action@v1
         with:
           url: "https://api.github.com/repos/cltnp/ppap/dispatches"
