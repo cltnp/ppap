@@ -172,6 +172,7 @@ jobs:
 
   trigger:
     name: Trigger
+    if: always()
     needs: [pre, run, after]
     runs-on: ubuntu-latest
     steps:
@@ -182,11 +183,3 @@ jobs:
           method: 'POST'
           customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
           data: '{"event_type": "meta"}'
-
-      - name: Trigger Meta Image
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: 'https://api.github.com/repos/cltnp/ppap/dispatches'
-          method: 'POST'
-          customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
-          data: '{"event_type": "meta-image"}'

@@ -161,6 +161,7 @@ jobs:
 
   trigger:
     name: Trigger
+    if: always()
     needs: [pre, run, after]
     runs-on: ubuntu-latest
     steps:
