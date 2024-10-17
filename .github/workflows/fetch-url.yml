@@ -2,17 +2,10 @@ name: Get Link
 
 on:
   workflow_dispatch:
-
-  # schedule:
-  #   - cron: 0/5 * * * *
-
   repository_dispatch:
     types:
       - article
-
-  # push:
-  #   branches:
-  #     - main
+      - url
 
 jobs:
   pre:
@@ -32,8 +25,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           token: ${{ secrets.GH_PAT }}
-          cache: "npm"
-          node-version-file: ".nvmrc"
+          cache: 'npm'
+          node-version-file: '.nvmrc'
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -76,8 +69,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           token: ${{ secrets.GH_PAT }}
-          cache: "npm"
-          node-version-file: ".nvmrc"
+          cache: 'npm'
+          node-version-file: '.nvmrc'
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -131,8 +124,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           token: ${{ secrets.GH_PAT }}
-          cache: "npm"
-          node-version-file: ".nvmrc"
+          cache: 'npm'
+          node-version-file: '.nvmrc'
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -177,20 +170,23 @@ jobs:
           git commit -m ':white_check_mark: Get Links'
           git push origin main -f
 
+  trigger:
+    name: Trigger
+    needs: [pre, run, after]
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger Meta
-        # if: steps.is_data_change.outputs.value == 'true'
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://api.github.com/repos/cltnp/ppap/dispatches"
-          method: "POST"
+          url: 'https://api.github.com/repos/cltnp/ppap/dispatches'
+          method: 'POST'
           customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
           data: '{"event_type": "meta"}'
 
       - name: Trigger Meta Image
-        # if: steps.is_data_change.outputs.value == 'true'
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://api.github.com/repos/cltnp/ppap/dispatches"
-          method: "POST"
+          url: 'https://api.github.com/repos/cltnp/ppap/dispatches'
+          method: 'POST'
           customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
           data: '{"event_type": "meta-image"}'
