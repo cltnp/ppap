@@ -187,7 +187,7 @@ jobs:
           data: '{"event_type": "meta"}'
 
       - name: Trigger Meta Image
-        if: steps.is_data_change.outputs.value == 'true'
+        # if: steps.is_data_change.outputs.value == 'true'
         uses: fjogeleit/http-request-action@v1
         with:
           url: "https://api.github.com/repos/cltnp/ppap/dispatches"
