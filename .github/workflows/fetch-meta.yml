@@ -103,18 +103,6 @@ jobs:
     needs: [run]
     runs-on: ubuntu-latest
     steps:
-      - name: Download from artifact
-        uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-
-      - name: Generate result file
-        id: get-meta
-        run: |
-          flattened_json=$(jq -sc 'map(.)' *)
-          cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
-          echo "value=$cleaned_json" >> $GITHUB_OUTPUT
-
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
@@ -141,15 +129,18 @@ jobs:
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
+      - name: Download from artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: .temp
+          merge-multiple: true
+
       - name: Pull again
         working-directory: src/databases/data
         run: git pull origin main
 
       - name: Store links
-        run: |
-          node src/functions/updateMetaArticle.js
-        env:
-          META_ARTICLE: ${{ toJson(steps.get-meta.outputs.value) }}
+        run: node src/functions/updateMetaArticle.js
 
       - name: Push
         working-directory: src/databases/data
