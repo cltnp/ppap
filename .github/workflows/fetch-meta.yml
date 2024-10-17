@@ -147,8 +147,9 @@ jobs:
 
       - name: Store links
         run: |
-          echo '${{ steps.get-meta.outputs.value }}' > ./.temp/articlesMeta.json
           node src/functions/updateMetaArticle.js
+        env:
+          META_ARTICLE: ${{ toJson(steps.get-meta.outputs.value) }}
 
       - name: Push
         working-directory: src/databases/data
