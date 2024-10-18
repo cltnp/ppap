@@ -126,7 +126,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.code }}
-          path: .temp/${{ steps.file.outputs.name }}.${{ endsWith(steps.file.outputs.file_name, 'webp') ? 'jpeg' : steps.file.outputs.ext }}
+          path: .temp/${{ steps.file.outputs.name }}.${{ steps.file.outputs.ext == 'webp' ? 'jpeg' : steps.file.outputs.ext }}
           if-no-files-found: warn
 
   after:
