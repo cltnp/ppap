@@ -136,8 +136,7 @@ jobs:
           merge-multiple: true
 
       - name: Pull again
-        working-directory: src/databases/data
-        run: git pull origin main
+        run: npm run data:update
 
       - name: Store links
         run: node src/functions/updateMetaArticle.js

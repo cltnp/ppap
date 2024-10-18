@@ -141,8 +141,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Pull again
-        working-directory: src/databases/data
-        run: git pull origin main
+        run: npm run data:updaterun: git pull origin main
 
       - name: Store links
         run: |

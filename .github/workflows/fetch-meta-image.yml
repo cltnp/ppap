@@ -47,8 +47,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Pull again
-        working-directory: src/databases/data
-        run: git pull origin main
+        run: npm run data:update
 
       - name: Check auth github
         id: created-articles
@@ -120,7 +119,7 @@ jobs:
       - name: Convert Webp to Jpeg
         if: endsWith(steps.file.outputs.file_name, 'webp')
         run: node src/functions/converter.js
-        
+
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
@@ -171,8 +170,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Pull again
-        working-directory: src/databases/data
-        run: git pull origin main
+        run: npm run data:update
 
       - name: Running
         run: node src/functions/githubUploadMetaImage.js
