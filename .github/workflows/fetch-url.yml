@@ -141,7 +141,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Pull again
-        run: npm run data:updaterun: git pull origin main
+        run: npm run data:update
 
       - name: Store links
         run: |
