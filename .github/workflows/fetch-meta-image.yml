@@ -118,7 +118,6 @@ jobs:
           echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
 
       - name: Convert Webp to Jpeg
-        working-directory: .temp
         if: endsWith(steps.file.outputs.file_name, 'webp')
         run: node src/functions/converter.js
 
