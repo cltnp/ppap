@@ -121,6 +121,13 @@ jobs:
         if: endsWith(steps.file.outputs.file_name, 'webp')
         run: node src/functions/converter.js
 
+      - name: test
+        run: |
+          echo ${{steps.file.outputs.name}}
+          echo ${{steps.file.outputs.ext}}
+          echo ${{steps.file.outputs.file_name}}
+          echo .temp/${{ steps.file.outputs.name }}.${{ steps.file.outputs.ext == 'webp' && 'jpeg' || steps.file.outputs.ext }}
+
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
@@ -182,7 +189,6 @@ jobs:
       - name: Push
         working-directory: src/databases/data
         run: |
-          pwd
           git status
           git config user.name "GitHub Actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
