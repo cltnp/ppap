@@ -120,14 +120,7 @@ jobs:
       - name: Convert Webp to Jpeg
         if: endsWith(steps.file.outputs.file_name, 'webp')
         run: node src/functions/converter.js
-
-      - name: test
-        run: |
-          echo ${{steps.file.outputs.name}}
-          echo ${{steps.file.outputs.ext}}
-          echo ${{steps.file.outputs.file_name}}
-          echo .temp/${{ steps.file.outputs.name }}.${{ steps.file.outputs.ext == 'webp' && 'jpeg' || steps.file.outputs.ext }}
-
+        
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
