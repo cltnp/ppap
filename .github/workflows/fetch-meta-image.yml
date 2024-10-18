@@ -107,18 +107,26 @@ jobs:
 
       - name: Rename image with detected extension
         working-directory: .temp
-        id: file_name
+        id: file
         run: |
           EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
-          FILE_NAME=$(echo -n "${{ matrix.image }}" | md5sum | awk '{ print $1 }' | xargs).$EXT
+          NAME=$(echo -n "${{ matrix.image }}" | md5sum | awk '{ print $1 }' | xargs)
+          FILE_NAME=$NAME.$EXT
           mv image.temp "$FILE_NAME"
-          echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "ext=$FILE_EXT" >> $GITHUB_OUTPUT
+          echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Convert Webp to Jpeg
+        working-directory: .temp
+        if: endsWith(steps.file.outputs.file_name, 'webp')
+        run: node src/functions/converter.js
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.code }}
-          path: .temp/${{ steps.file_name.outputs.value }}
+          path: .temp/${{ steps.file.outputs.name }}.${{ endsWith(steps.file.outputs.file_name, 'webp') ? 'jpeg' : steps.file.outputs.ext }}
           if-no-files-found: warn
 
   after:
