@@ -38,17 +38,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: cltnp/kh
-          path: .temp
+          path: apidata
           token: ${{ secrets.GH_PAT }}
 
       - name: Clean
-        run: find .temp -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+        run: find apidata -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
 
       - name: Init Api
         run: node src/api/init_categories.js
 
       - name: Push
-        working-directory: .temp
+        working-directory: apidata
         run: |
           git config user.name "GitHub Actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
