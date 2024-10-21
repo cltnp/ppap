@@ -1,0 +1,50 @@
+name: Init Api
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    name: Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-clutter
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Checkout data
+        uses: actions/checkout@v4
+        with:
+          repository: cltnp/kh
+          path: .temp
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Clean
+        run: find .temp -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+
+      - name: Init Api
+        run: node src/api/init_categories.js
+
+      - name: Push
+        working-directory: .temp
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m ':white_check_mark: Get Links'
+          git push origin main -f
