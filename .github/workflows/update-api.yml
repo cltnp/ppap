@@ -1,7 +1,10 @@
-name: Init Api
+name: Update Api
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types:
+      - update-api
 
 jobs:
   run:
@@ -41,11 +44,8 @@ jobs:
           path: apidata
           token: ${{ secrets.GH_PAT }}
 
-      - name: Clean
-        run: find apidata -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-
-      - name: Init Api
-        run: node src/api/init_api.js
+      - name: Update Api
+        run: node src/api/update_api.js
 
       - name: Push
         working-directory: apidata
