@@ -30,6 +30,13 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v4
         with:
+          repository: ClutterNews/kh-data
+          path: src/databases/data
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Checkout api
+        uses: actions/checkout@v4
+        with:
           repository: cltnp/kh
           path: .temp
           token: ${{ secrets.GH_PAT }}
