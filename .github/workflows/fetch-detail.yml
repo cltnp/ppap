@@ -101,7 +101,7 @@ jobs:
       - name: Get Detail
         run: npm run get:detail
         env:
-          META_ARTICLE: ${{ matrix }}
+          META_ARTICLE: ${{ toJSON(matrix) }}
 
       - name: Test
         run: echo .temp/${{ matrix.code }}.md
