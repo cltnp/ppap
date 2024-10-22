@@ -84,19 +84,27 @@ jobs:
           repository: ClutterNews/nodejs-clutter
           token: ${{ secrets.GH_PAT }}
 
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         token: ${{ secrets.GH_PAT }}
-  #         cache: 'npm'
-  #         node-version-file: '.nvmrc'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: 'npm'
+          node-version-file: '.nvmrc'
 
-  #     - name: Cache node_modules
-  #       id: cache-node-modules
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: node_modules
-  #         key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Get Detail
+        run: npm run get:detail
+        env:
+          META_ARTICLE: ${{ matrix }}
+
+      - name: Test
+        run: echo .temp/${{ matrix.code }}.md
 
   #     - name: Download image
   #       working-directory: .temp
