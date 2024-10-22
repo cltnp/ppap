@@ -110,6 +110,8 @@ jobs:
         run: |
           cat .temp/${{ matrix.code }}.md
 
+          echo '__________________________'
+
           echo "Image URLs found:"
           grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md
 
