@@ -58,9 +58,6 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           ref: ${{ matrix.language_code }}
 
-      - name: Clean
-        run: find apidata -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-
       - name: Init Api
         run: |
           IFS=',' read -ra ARRAY_CATEGORY_CODE <<< "$LIST_CATEGORY_CODE"
