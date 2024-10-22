@@ -3,10 +3,19 @@ name: Init Api
 on:
   workflow_dispatch:
 
+env:
+  CHUNK_SIZE: 20
+  FIRST_CHUNK_SIZE: 40
+  ALIAS: ART
+
 jobs:
   run:
     name: Run
     runs-on: ubuntu-latest
+    matrix:
+      include:
+        - language_code: km
+        - language_code: en
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -41,6 +50,10 @@ jobs:
           path: apidata
           token: ${{ secrets.GH_PAT }}
 
+      - name: Switch language ${{ matrix.language_code }}
+        working-directory: apidata
+        run: git switch -c ${{ matrix.language_code }}
+
       - name: Clean
         run: find apidata -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
 
@@ -54,4 +67,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m ':white_check_mark: Init Api'
-          git push origin main -f
+          git push origin ${{ matrix.language_code }} -f
