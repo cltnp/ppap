@@ -6,10 +6,23 @@ on:
     types:
       - update-api
 
+env:
+  CHUNK_SIZE: 20
+  FIRST_CHUNK_SIZE: 40
+  ALIAS: ART
+  LIST_CATEGORY_CODE: NEWS,POLITICS,BUSINESS,ENVIRONMENT,LIFESTYLE,WORLD,ANALYTICS,SPECIAL_REPORTS,OPINION,NATIONAL,SPORT
+
 jobs:
   run:
     name: Run
     runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - language_code: km
+          - language_code: en
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -44,8 +57,22 @@ jobs:
           path: apidata
           token: ${{ secrets.GH_PAT }}
 
-      - name: Update Api
-        run: node src/api/update_api.js
+      - name: Switch language ${{ matrix.language_code }}
+        working-directory: apidata
+        run: git switch -c ${{ matrix.language_code }}
+
+      - name: Clean
+        run: find apidata -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+
+      - name: Init Api
+        run: |
+          IFS=',' read -ra ARRAY_CATEGORY_CODE <<< "$LIST_CATEGORY_CODE"
+          for CATEGORY_CODE in "${ARRAY_CATEGORY_CODE[@]}"; do
+            export CATEGORY_CODE=$CATEGORY_CODE
+            node src/api/update_api.js
+          done
+        env:
+          LANGUAGE_CODE: ${{ matrix.language_code }}
 
       - name: Push
         working-directory: apidata
@@ -53,5 +80,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Init Api'
-          git push origin main -f
+          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Update Api'
+          git push origin ${{ matrix.language_code }} -f
