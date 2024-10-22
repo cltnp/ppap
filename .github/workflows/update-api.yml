@@ -56,10 +56,7 @@ jobs:
           repository: cltnp/kh
           path: apidata
           token: ${{ secrets.GH_PAT }}
-
-      - name: Switch language ${{ matrix.language_code }}
-        working-directory: apidata
-        run: git switch -c ${{ matrix.language_code }}
+          ref: ${{ matrix.language_code }}
 
       - name: Clean
         run: find apidata -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
