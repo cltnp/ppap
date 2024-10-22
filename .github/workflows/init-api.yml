@@ -7,7 +7,7 @@ env:
   CHUNK_SIZE: 20
   FIRST_CHUNK_SIZE: 40
   ALIAS: ART
-  LIST_CATEGORY_CODE: ("NEWS" "POLITICS" "BUSINESS" "ENVIRONMENT" "LIFESTYLE" "WORLD" "ANALYTICS" "SPECIAL_REPORTS" "OPINION" "NATIONAL" "SPORT")
+  LIST_CATEGORY_CODE: NEWS,POLITICS,BUSINESS,ENVIRONMENT,LIFESTYLE,WORLD,ANALYTICS,SPECIAL_REPORTS,OPINION,NATIONAL,SPORT
 
 jobs:
   run:
@@ -63,10 +63,10 @@ jobs:
 
       - name: Init Api
         run: |
-          for CATEGORY_CODE in "${LIST_CATEGORY_CODE[@]}"; do
-            echo $CATEGORY_CODE
+          IFS=',' read -ra ARRAY_CATEGORY_CODE <<< "$LIST_CATEGORY_CODE"
+          for CATEGORY_CODE in "${ARRAY_CATEGORY_CODE[@]}"; do
             export CATEGORY_CODE=$CATEGORY_CODE
-            # node src/api/init_api.js
+            node src/api/init_api.js
           done
         env:
           LANGUAGE_CODE: ${{ matrix.language_code }}
