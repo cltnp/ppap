@@ -107,7 +107,7 @@ jobs:
           META_ARTICLE: ${{ toJSON(matrix) }}
 
       - name: Test
-        run: echo .temp/${{ matrix.code }}.md
+        run: cat .temp/${{ matrix.code }}.md
 
   #     - name: Download image
   #       working-directory: .temp
