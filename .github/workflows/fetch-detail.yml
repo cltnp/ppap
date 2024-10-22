@@ -113,10 +113,10 @@ jobs:
           echo '__________________________'
 
           echo "Image URLs found:"
-          grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md
+          grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null || echo "No images found."
 
           echo -e "\nVideo URLs found:"
-          grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv'
+          grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv' || echo "No videos found."
 
   #     - name: Download image
   #       working-directory: .temp
