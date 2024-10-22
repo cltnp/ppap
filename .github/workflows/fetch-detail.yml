@@ -1,0 +1,200 @@
+name: Get Detail
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - detail
+jobs:
+  pre:
+    name: Pre
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    outputs:
+      articles_without_github_image: ${{ steps.articles_without_github_image.outputs.value }}
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-clutter
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run npm install
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Checkout data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-data
+          path: src/databases/data
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Pull again
+        run: npm run data:update
+
+      - name: Check auth github
+        id: created-articles
+        run: node src/functions/githubAuth.js
+
+      - name: Push
+        working-directory: src/databases/data
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Auth github'
+          git push origin main -f
+
+      - name: Get articles without github image
+        id: articles_without_github_image
+        run: |
+          node src/functions/getArticlesWithGitHubImage.js                   
+          echo "value=$(cat .temp/getArticlesWithGitHubImage.json)" >> $GITHUB_OUTPUT
+
+  run:
+    name: Run ${{ matrix.code }}
+    if: needs.pre.outputs.articles_without_github_image != '[]'
+    runs-on: ubuntu-latest
+    needs: [pre]
+    continue-on-error: true
+    strategy:
+      fail-fast: true
+      matrix:
+        include: ${{ fromJson(needs.pre.outputs.articles_without_github_image) }}
+
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-clutter
+          token: ${{ secrets.GH_PAT }}
+
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         token: ${{ secrets.GH_PAT }}
+  #         cache: 'npm'
+  #         node-version-file: '.nvmrc'
+
+  #     - name: Cache node_modules
+  #       id: cache-node-modules
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: node_modules
+  #         key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+  #     - name: Download image
+  #       working-directory: .temp
+  #       run: curl -o image.temp ${{ matrix.image }}
+
+  #     - name: Rename image with detected extension
+  #       working-directory: .temp
+  #       id: file
+  #       run: |
+  #         EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
+  #         NAME=$(echo -n "${{ matrix.image }}" | md5sum | awk '{ print $1 }' | xargs)
+  #         FILE_NAME=$NAME.$EXT
+  #         mv image.temp "$FILE_NAME"
+  #         echo "name=$NAME" >> $GITHUB_OUTPUT
+  #         echo "ext=$EXT" >> $GITHUB_OUTPUT
+  #         echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
+
+  #     - name: Convert Webp to Jpeg
+  #       if: endsWith(steps.file.outputs.file_name, 'webp')
+  #       run: node src/functions/converter.js
+
+  #     - name: Upload to artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ matrix.code }}
+  #         path: .temp/${{ steps.file.outputs.name }}.${{ steps.file.outputs.ext == 'webp' && 'jpeg' || steps.file.outputs.ext }}
+  #         if-no-files-found: warn
+
+  # after:
+  #   name: After
+  #   needs: [pre, run]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout crawl
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: ClutterNews/nodejs-clutter
+  #         token: ${{ secrets.GH_PAT }}
+
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         token: ${{ secrets.GH_PAT }}
+  #         cache: 'npm'
+  #         node-version-file: '.nvmrc'
+
+  #     - name: Cache node_modules
+  #       id: cache-node-modules
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: node_modules
+  #         key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+  #     - name: Run npm install
+  #       if: steps.cache-node-modules.outputs.cache-hit != 'true'
+  #       run: npm install
+
+  #     - name: Download from artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: .temp
+  #         merge-multiple: true
+
+  #     - name: Checkout data
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: ClutterNews/kh-data
+  #         path: src/databases/data
+  #         token: ${{ secrets.GH_PAT }}
+
+  #     - name: Pull again
+  #       run: npm run data:update
+
+  #     - name: Running
+  #       run: node src/functions/githubUploadMetaImage.js
+  #       env:
+  #         ARTICLES_WITHOUT_GITHUB_IMAGE: '${{ needs.pre.outputs.articles_without_github_image }}'
+
+  #     - name: Push
+  #       working-directory: src/databases/data
+  #       run: |
+  #         git status
+  #         git config user.name "GitHub Actions"
+  #         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+  #         git add -A
+  #         git diff-index --quiet HEAD || git commit -m ':white_check_mark: Meta Image'
+  #         git push origin main -f
+
+  # trigger:
+  #   name: Trigger
+  #   if: always()
+  #   needs: [pre, run, after]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Trigger Meta Image
+  #       uses: fjogeleit/http-request-action@v1
+  #       with:
+  #         url: 'https://api.github.com/repos/cltnp/p/dispatches'
+  #         method: 'POST'
+  #         customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
+  #         data: '{"event_type": "update-api"}'
