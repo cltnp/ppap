@@ -107,7 +107,14 @@ jobs:
           META_ARTICLE: ${{ toJSON(matrix) }}
 
       - name: Test
-        run: cat .temp/${{ matrix.code }}.md
+        run: |
+          cat .temp/${{ matrix.code }}.md
+
+          echo "Image URLs found:"
+          grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md
+
+          echo -e "\nVideo URLs found:"
+          grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv'
 
   #     - name: Download image
   #       working-directory: .temp
