@@ -12,10 +12,13 @@ jobs:
   run:
     name: Run
     runs-on: ubuntu-latest
-    matrix:
-      include:
-        - language_code: km
-        - language_code: en
+    continue-on-error: true
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - language_code: km
+          - language_code: en
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
