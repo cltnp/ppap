@@ -10,19 +10,13 @@ env:
   CHUNK_SIZE: 20
   FIRST_CHUNK_SIZE: 40
   ALIAS: ART
+  LIST_LANGUAGE_CODE: km,en
   LIST_CATEGORY_CODE: NEWS,POLITICS,BUSINESS,ENVIRONMENT,LIFESTYLE,WORLD,ANALYTICS,SPECIAL_REPORTS,OPINION,NATIONAL,SPORT
 
 jobs:
   run:
     name: Run
     runs-on: ubuntu-latest
-    continue-on-error: true
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - language_code: km
-          - language_code: en
     steps:
       - name: Checkout crawl
         uses: actions/checkout@v4
@@ -53,20 +47,23 @@ jobs:
       - name: Checkout api
         uses: actions/checkout@v4
         with:
-          repository: cltnp/kh
+          repository: CltnApi/kh
           path: apidata
           token: ${{ secrets.GH_PAT }}
-          ref: ${{ matrix.language_code }}
+          ref: gh-pages
 
       - name: Init Api
         run: |
-          IFS=',' read -ra ARRAY_CATEGORY_CODE <<< "$LIST_CATEGORY_CODE"
-          for CATEGORY_CODE in "${ARRAY_CATEGORY_CODE[@]}"; do
-            export CATEGORY_CODE=$CATEGORY_CODE
-            node src/api/update_api.js
+          IFS=',' read -ra ARRAY_CATEGORY_CODE <<<"$LIST_CATEGORY_CODE"
+          IFS=',' read -ra ARRAY_LANGUAGE_CODE <<<"$LIST_LANGUAGE_CODE"
+
+          for LANGUAGE_CODE in "${ARRAY_LANGUAGE_CODE[@]}"; do
+            export LANGUAGE_CODE=$LANGUAGE_CODE
+            for CATEGORY_CODE in "${ARRAY_CATEGORY_CODE[@]}"; do
+              export CATEGORY_CODE=$CATEGORY_CODE
+              node src/api/update_api.js
+            done
           done
-        env:
-          LANGUAGE_CODE: ${{ matrix.language_code }}
 
       - name: Push
         working-directory: apidata
