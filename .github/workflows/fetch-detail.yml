@@ -71,7 +71,7 @@ jobs:
           node src/functions/getArticlesWithGitHubImage.js                   
           echo "value=$(cat .temp/articlesWithGitHubImage.json)" >> $GITHUB_OUTPUT
 
-  run-md-image:
+  run:
     name: Run markdown and image urls ${{ matrix.code }}
     if: needs.pre.outputs.articles_with_github_image != '[]'
     runs-on: ubuntu-latest
@@ -125,35 +125,52 @@ jobs:
       - name: Convert Webp to Jpeg
         run: node src/functions/converter.js
 
+      - name: Remove keep file
+        run: rm -rf .temp/.keep
+
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.code }}
+          path: .temp/*
+          if-no-files-found: warn
+  after:
+    name: After
+    needs: [pre, run]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout crawl
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/nodejs-clutter
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Run npm install
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Download from artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: .temp
+          merge-multiple: true
+
       - name: Test
         run: cd .temp && ls -la
-
-  #     - name: Download image
-  #       working-directory: .temp
-  #       run: curl -o image.temp ${{ matrix.image }}
-
-  #     - name: Rename image with detected extension
-  #       working-directory: .temp
-  #       id: file
-  #       run: |
-  #         EXT=$(file --mime-type -b image.temp | awk -F'/' '{print $2}')
-  #         NAME=$(echo -n "${{ matrix.image }}" | md5sum | awk '{ print $1 }' | xargs)
-  #         FILE_NAME=$NAME.$EXT
-  #         mv image.temp "$FILE_NAME"
-  #         echo "name=$NAME" >> $GITHUB_OUTPUT
-  #         echo "ext=$EXT" >> $GITHUB_OUTPUT
-  #         echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
-
-  #     - name: Convert Webp to Jpeg
-  #       if: endsWith(steps.file.outputs.file_name, 'webp')
-  #       run: node src/functions/converter.js
-
-  #     - name: Upload to artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ matrix.code }}
-  #         path: .temp/${{ steps.file.outputs.name }}.${{ steps.file.outputs.ext == 'webp' && 'jpeg' || steps.file.outputs.ext }}
-  #         if-no-files-found: warn
 
   # after:
   #   name: After
