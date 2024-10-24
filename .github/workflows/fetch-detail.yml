@@ -115,10 +115,11 @@ jobs:
           echo -e '\n\n\n__________________________\n\n\n'
 
           echo "Image URLs found:"
-          grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null || echo "No images found."
+          echo "$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | jq -R -s -c 'split("\n") | map(select(length > 0))' || echo '[]')" > .temp/image_urls.json
+          cat .temp/image_urls.json
 
-          echo -e "\nVideo URLs found:"
-          grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv' || echo "No videos found."
+          # echo -e "\nVideo URLs found:"
+          # grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv' || echo "No videos found."
 
   #     - name: Download image
   #       working-directory: .temp
