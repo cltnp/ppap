@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/ppap/fetch-detail.yml
+      - .github/workflows/fetch-detail.yml
   workflow_dispatch:
   repository_dispatch:
     types:
