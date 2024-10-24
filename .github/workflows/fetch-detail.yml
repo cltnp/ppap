@@ -131,16 +131,11 @@ jobs:
       - name: Test
         run: ls  ${{ github.workspace }}/.temp
 
-      - name: Upload to artifact
+      - name: Upload .temp folder to artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.code }}
-          path: |
-            .temp/*.md
-            .temp/*.jpeg
-            .temp/*.jpg
-            .temp/*.png
-          if-no-files-found: warn
+          name: temp-files-artifact # Name of the artifact
+          path: .temp/
   after:
     name: After
     needs: [pre, run]
