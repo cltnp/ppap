@@ -179,6 +179,3 @@ jobs:
           name: total_files
           path: temp/
           if-no-files-found: warn
-
-      - name: Test
-        run: cd .temp && ls -la
