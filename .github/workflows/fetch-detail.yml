@@ -129,13 +129,13 @@ jobs:
         run: rm -rf .temp/.keep
 
       - name: Test
-        run: cd .temp && ls  ${{ github.workspace }}/.temp
+        run: ls .temp
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.code }}
-          path: ${{ github.workspace }}/.temp/
+          path: .temp/*.?
           if-no-files-found: warn
   after:
     name: After
