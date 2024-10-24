@@ -116,19 +116,17 @@ jobs:
         run: |
           IMAGE_URLS=$(cat .temp/${{ matrix.code }}_IMAGE_URLS.json)
           if [ "$IMAGE_URLS" != "[]" ]; then
-            mkdir -p .temp/${{ matrix.code }}_images
             echo "$IMAGE_URLS" | jq -r '.[]' | while read -r url; do
+              curl -L -o ".temp/image.temp" "$url"
               NAME=$(echo -n "$url" | md5sum | awk '{ print $1 }' | xargs)
-              curl -L -o ".temp/${{ matrix.code }}_images/temp_image" "$url"
-              EXT=$(file --mime-type -b ".temp/${{ matrix.code }}_images/temp_image" | awk -F'/' '{print $2}')
-              mv ".temp/${{ matrix.code }}_images/temp_image" ".temp/${{ matrix.code }}_images/$NAME.$EXT"
+              EXT=$(file --mime-type -b ".temp/image.temp" | awk -F'/' '{print $2}')
+              mv ".temp/image.temp" ".temp/$NAME.$EXT"
             done
           else
             echo "No image URLs found for ${{ matrix.code }}"
           fi
 
       - name: Convert Webp to Jpeg
-        if: endsWith(steps.file.outputs.file_name, 'webp')
         run: node src/functions/converter.js
 
       - name: Test
