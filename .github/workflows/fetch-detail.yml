@@ -110,7 +110,7 @@ jobs:
 
       - name: Download all images
         run: |
-          IMAGE_URLS=$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md)
+          IMAGE_URLS=$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md | grep -v 'github.com')
           if [ -n "$IMAGE_URLS" ]; then
             echo "$IMAGE_URLS" | while read -r url; do
               curl -L -o ".temp/image.temp" "$url"
@@ -125,7 +125,7 @@ jobs:
       - name: Convert Webp to Jpeg
         run: node src/functions/converter.js
 
-      - name: Remove keep file
+      - name: Prepare temp folder
         run: rm -rf .temp/.keep && mv .temp temp
 
       - name: Upload to artifact
@@ -134,9 +134,6 @@ jobs:
           name: ${{ matrix.code }}
           path: temp/
           if-no-files-found: warn
-
-      - name: Test
-        run: ls temp
 
   after:
     name: After
@@ -172,6 +169,16 @@ jobs:
         with:
           path: .temp
           merge-multiple: true
+
+      - name: Prepare temp folder
+        run: rm -rf .temp/.keep && mv .temp temp
+
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.code }}
+          path: temp/
+          if-no-files-found: warn
 
       - name: Test
         run: cd .temp && ls -la
