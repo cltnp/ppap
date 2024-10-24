@@ -108,15 +108,11 @@ jobs:
         env:
           META_ARTICLE: ${{ toJSON(matrix) }}
 
-      - name: Get image urls
-        run: echo "$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | jq -R -s -c 'split("\n") | map(select(length > 0))' || echo '[]')" > .temp/${{ matrix.code }}_IMAGE_URLS.json
-        # grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv' || echo "No videos found."
-
       - name: Download all images
         run: |
-          IMAGE_URLS=$(cat .temp/${{ matrix.code }}_IMAGE_URLS.json)
-          if [ "$IMAGE_URLS" != "[]" ]; then
-            echo "$IMAGE_URLS" | jq -r '.[]' | while read -r url; do
+          IMAGE_URLS=$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md)
+          if [ -n "$IMAGE_URLS" ]; then
+            echo "$IMAGE_URLS" | while read -r url; do
               curl -L -o ".temp/image.temp" "$url"
               NAME=$(echo -n "$url" | md5sum | awk '{ print $1 }' | xargs)
               EXT=$(file --mime-type -b ".temp/image.temp" | awk -F'/' '{print $2}')
