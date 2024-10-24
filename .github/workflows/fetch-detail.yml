@@ -71,8 +71,8 @@ jobs:
           node src/functions/getArticlesWithGitHubImage.js                   
           echo "value=$(cat .temp/articlesWithGitHubImage.json)" >> $GITHUB_OUTPUT
 
-  run:
-    name: Run ${{ matrix.code }}
+  run-md-image:
+    name: Run markdown and image urls ${{ matrix.code }}
     if: needs.pre.outputs.articles_with_github_image != '[]'
     runs-on: ubuntu-latest
     needs: [pre]
@@ -108,18 +108,31 @@ jobs:
         env:
           META_ARTICLE: ${{ toJSON(matrix) }}
 
-      - name: Test
+      - name: Get image urls
+        run: echo "$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | jq -R -s -c 'split("\n") | map(select(length > 0))' || echo '[]')" > .temp/${{ matrix.code }}_IMAGE_URLS.json
+        # grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv' || echo "No videos found."
+
+      - name: Download all images
         run: |
-          cat .temp/${{ matrix.code }}.md
+          IMAGE_URLS=$(cat .temp/${{ matrix.code }}_IMAGE_URLS.json)
+          if [ "$IMAGE_URLS" != "[]" ]; then
+            mkdir -p .temp/${{ matrix.code }}_images
+            echo "$IMAGE_URLS" | jq -r '.[]' | while read -r url; do
+              NAME=$(echo -n "$url" | md5sum | awk '{ print $1 }' | xargs)
+              curl -L -o ".temp/${{ matrix.code }}_images/temp_image" "$url"
+              EXT=$(file --mime-type -b ".temp/${{ matrix.code }}_images/temp_image" | awk -F'/' '{print $2}')
+              mv ".temp/${{ matrix.code }}_images/temp_image" ".temp/${{ matrix.code }}_images/$NAME.$EXT"
+            done
+          else
+            echo "No image URLs found for ${{ matrix.code }}"
+          fi
 
-          echo -e '\n\n\n__________________________\n\n\n'
+      - name: Convert Webp to Jpeg
+        if: endsWith(steps.file.outputs.file_name, 'webp')
+        run: node src/functions/converter.js
 
-          echo "Image URLs found:"
-          echo "$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | jq -R -s -c 'split("\n") | map(select(length > 0))' || echo '[]')" > .temp/image_urls.json
-          cat .temp/image_urls.json
-
-          # echo -e "\nVideo URLs found:"
-          # grep -oP '\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md 2>/dev/null | grep -E '\.mp4|\.mov|\.webm|\.ogg|\.avi|\.mkv' || echo "No videos found."
+      - name: Test
+        run: cd .temp && ls -la
 
   #     - name: Download image
   #       working-directory: .temp
