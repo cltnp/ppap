@@ -135,7 +135,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.code }}
-          path: .temp/*
+          path: .temp/
           if-no-files-found: warn
   after:
     name: After
