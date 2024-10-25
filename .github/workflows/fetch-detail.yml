@@ -179,7 +179,7 @@ jobs:
           merge-multiple: true
 
       - name: Move error file
-        run: mkdir .temp-error && mv .temp/*.md.error .temp-error/*.md
+        run: mkdir .temp-error && mv .temp/*.md.error .temp-error
 
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
