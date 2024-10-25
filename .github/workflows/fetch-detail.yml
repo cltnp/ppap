@@ -1,11 +1,6 @@
 name: Get Detail
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/fetch-detail.yml
   workflow_dispatch:
   repository_dispatch:
     types:
