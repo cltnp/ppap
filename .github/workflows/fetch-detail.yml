@@ -196,11 +196,11 @@ jobs:
           git diff-index --quiet HEAD || git commit -m ':white_check_mark: Finish Detail'
           git push origin gh-pages
 
-      - name: Update Article
-        run: node src/functions/updateFinishArticle.js
-
       - name: Pull again
         run: npm run data:update
+
+      - name: Update Article
+        run: node src/functions/updateFinishArticle.js
 
       - name: Push
         working-directory: src/databases/data
