@@ -60,7 +60,7 @@ jobs:
           git diff-index --quiet HEAD || git commit -m ':white_check_mark: Auth github'
           git push origin main -f
 
-      - name: Get articles without github image
+      - name: Get articles with github image
         id: articles_with_github_image
         run: |
           node src/functions/getArticlesWithGitHubImage.js                   
