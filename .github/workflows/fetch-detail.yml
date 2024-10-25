@@ -121,7 +121,7 @@ jobs:
 
       - name: Check on failures
         if: steps.download-images.outcome != 'success'
-        run: mv .temp/${{ matrix.code }}.md .temp/${{ matrix.code }}.md.error
+        run: mv .temp/${{ matrix.code }}.md .temp/${{ matrix.code }}.md.pass
 
       - name: Convert Webp to Jpeg
         run: node src/functions/converter.js
@@ -178,16 +178,16 @@ jobs:
           path: .temp
           merge-multiple: true
 
-      - name: Move error file
-        run: mkdir .temp-error && mv .temp/*.md.error .temp-error
+      - name: Move pass file
+        run: mkdir .temp-pass && mv .temp/*.md.pass .temp-pass
 
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
 
-      - name: Move error back
+      - name: Move pass back
         run: |
-          find .temp-error -type f -name '*.md.error' -exec sh -c 'mv "$0" "${0%.error}"' {} \; 
-          mv .temp-error/*.md .temp/
+          find .temp-pass -type f -name '*.md.pass' -exec sh -c 'mv "$0" "${0%.pass}"' {} \; 
+          mv .temp-pass/*.md .temp/
 
       - name: Checkout crawl
         uses: actions/checkout@v4
