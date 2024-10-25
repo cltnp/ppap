@@ -177,6 +177,9 @@ jobs:
           path: .temp
           merge-multiple: true
 
+      - name: Test
+        run: cd .temp && ls -la
+
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
         env:
