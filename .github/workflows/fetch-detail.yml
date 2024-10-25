@@ -164,6 +164,13 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
+      - name: Checkout data
+        uses: actions/checkout@v4
+        with:
+          repository: ClutterNews/kh-data
+          path: src/databases/data
+          token: ${{ secrets.GH_PAT }}
+
       - name: Download from artifact
         uses: actions/download-artifact@v4
         with:
