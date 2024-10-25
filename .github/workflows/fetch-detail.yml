@@ -104,6 +104,8 @@ jobs:
           META_ARTICLE: ${{ toJSON(matrix) }}
 
       - name: Download all images
+        id: download-images
+        continue-on-error: true
         run: |
           IMAGE_URLS=$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md | grep -v 'github.com')
           if [ -n "$IMAGE_URLS" ]; then
@@ -116,6 +118,10 @@ jobs:
           else
             echo "No image URLs found for ${{ matrix.code }}"
           fi
+
+      - name: Check on failures
+        if: steps.download-images.outcome != 'success'
+        run: mv .temp/${{ matrix.code }}.md .temp/${{ matrix.code }}.md.error
 
       - name: Convert Webp to Jpeg
         run: node src/functions/converter.js
@@ -172,8 +178,16 @@ jobs:
           path: .temp
           merge-multiple: true
 
+      - name: Move error file
+        run: mkdir .temp-error && mv .temp/*.md.error .temp-error/*.md
+
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
+
+      - name: Move error back
+        run: |
+          find .temp-error -type f -name '*.md.error' -exec sh -c 'mv "$0" "${0%.error}"' {} \; 
+          mv .temp-error/*.md .temp/
 
       - name: Checkout crawl
         uses: actions/checkout@v4
