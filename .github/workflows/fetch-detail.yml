@@ -179,16 +179,8 @@ jobs:
 
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
+        env:
+          ARTICLES_FINISH_META: ${{ needs.pre.outputs.articles_with_github_image }}
 
       - name: Test
         run: cd .temp && ls -la
-
-      - name: Prepare temp folder
-        run: rm -rf .temp/.keep && mv .temp temp
-
-      - name: Upload to artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: total_files
-          path: temp/
-          if-no-files-found: warn
