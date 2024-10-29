@@ -179,7 +179,7 @@ jobs:
           merge-multiple: true
 
       - name: Move pass file
-        run: mkdir .temp-pass && mv .temp/*.md.pass .temp-pass
+        run: mkdir .temp-pass && mv .temp/*.md.pass .temp-pass/
 
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
