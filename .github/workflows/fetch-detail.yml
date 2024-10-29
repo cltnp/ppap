@@ -179,12 +179,14 @@ jobs:
           merge-multiple: true
 
       - name: Move pass file
+        continue-on-error: true
         run: mkdir .temp-pass && mv .temp/*.md.pass .temp-pass/
 
       - name: Upload detail image
         run: node src/functions/githubUploadDetailImage.js
 
       - name: Move pass back
+        continue-on-error: true
         run: |
           find .temp-pass -type f -name '*.md.pass' -exec sh -c 'mv "$0" "${0%.pass}"' {} \; 
           mv .temp-pass/*.md .temp/
