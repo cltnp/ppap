@@ -19,7 +19,7 @@ jobs:
       - name: test
         run: 'echo "payload: ${{ toJson(github.event.client_payload) }}"'
 
-        - name: Checkout crawl
+      - name: Checkout crawl
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/nodejs-clutter
