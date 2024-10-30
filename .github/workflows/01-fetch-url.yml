@@ -1,10 +1,12 @@
-name: Get Meta
+name: Get Link
 
 on:
   workflow_dispatch:
   repository_dispatch:
     types:
-      - meta
+      - url
+env:
+  COUNTRY_CODE: ${{ github.event.client_payload.country_code }}
 
 jobs:
   pre:
@@ -12,19 +14,15 @@ jobs:
     timeout-minutes: 1
     runs-on: ubuntu-latest
     outputs:
-      created-articles: ${{ steps.created-articles.outputs.value }}
+      sites: ${{ steps.sites.outputs.value }}
     steps:
-      - name: Checkout crawl
+      - name: test
+        run: echo ${{ github.event.client_payload }}}
+
+        - name: Checkout crawl
         uses: actions/checkout@v4
         with:
           repository: ClutterNews/nodejs-clutter
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Checkout data
-        uses: actions/checkout@v4
-        with:
-          repository: ClutterNews/kh-data
-          path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node
@@ -45,25 +43,24 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Get list created articles
-        id: created-articles
-        run: |
-          node src/functions/getCreatedArticles.js
-          echo "value=$(cat .temp/createdArticles.json)" >> $GITHUB_OUTPUT
+      - name: Check list website
+        id: sites
+        run: echo "value=$(node src/functions/websites.js)" >> $GITHUB_OUTPUT
 
       - name: Echo value
-        run: echo "${{ steps.created-articles.outputs.value }}"
+        run: echo "${{ steps.sites.outputs.value }}"
 
   run:
-    name: Run ${{ matrix.code }}
-    if: needs.pre.outputs.created-articles != '[]'
+    name: Run ${{ matrix.site_name}}
     runs-on: ubuntu-latest
     needs: [pre]
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        include: ${{ fromJson(needs.pre.outputs.created-articles) }}
+        include: ${{ fromJson(needs.pre.outputs.sites) }}
+    env:
+      SITE_URL: ${{ matrix.site_url }}
 
     steps:
       - name: Checkout crawl
@@ -80,22 +77,28 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Cache node_modules
-        id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
           key: cache-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Run meta
-        run: echo $CREATED_ARTICLE && npm run get:meta
+      - name: Run get link
+        run: npm run get:url
         env:
-          CREATED_ARTICLE: ${{ toJson(matrix) }}
+          SITE_CODE: ${{ matrix.code }}
+
+      - name: Generate artifact file
+        id: file-name
+        run: |
+          FILE_NAME=$(echo $(date +'ART%y%m%d')$(openssl rand -hex 3) | perl -ne 'print uc')
+          cp .temp/data.json $FILE_NAME.json
+          echo "value=$FILE_NAME" >> $GITHUB_OUTPUT
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.code }}
-          path: .temp/${{ matrix.code }}.json
+          name: ${{ steps.file-name.outputs.value }}
+          path: ${{ steps.file-name.outputs.value }}.json
           if-no-files-found: warn
 
   after:
@@ -103,6 +106,18 @@ jobs:
     needs: [run]
     runs-on: ubuntu-latest
     steps:
+      - name: Download from artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Generate result file
+        id: get-link
+        run: |
+          flattened_json=$(jq -sc 'map(.[])' *)
+          cleaned_json=$(echo "$flattened_json" | sed 's/^[ \t]*//' | tr -d '\n\r')
+          echo "value=$cleaned_json" >> $GITHUB_OUTPUT
+
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
@@ -125,29 +140,37 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-data
+          repository: ClutterNews/${{ env.COUNTRY_CODE }}-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
-
-      - name: Download from artifact
-        uses: actions/download-artifact@v4
-        with:
-          path: .temp
-          merge-multiple: true
 
       - name: Pull again
         run: npm run data:update
 
       - name: Store links
-        run: node src/functions/updateMetaArticle.js
+        run: |
+          echo '${{ steps.get-link.outputs.value }}' > ./.temp/articles.json
+          node src/functions/insertArticles.js
+
+      - name: Check git data changes
+        id: is_data_change
+        working-directory: src/databases/data
+        continue-on-error: true
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "value=true" >> $GITHUB_OUTPUT
+          else
+            echo "value=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Push
         working-directory: src/databases/data
+        if: steps.is_data_change.outputs.value == 'true'
         run: |
           git config user.name "GitHub Actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff-index --quiet HEAD || git commit -m ':white_check_mark: Meta'
+          git commit -m ':white_check_mark: Get Links'
           git push origin main -f
 
   trigger:
@@ -156,10 +179,10 @@ jobs:
     needs: [pre, run, after]
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Meta Image
+      - name: Trigger Meta
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://api.github.com/repos/cltnp/p/dispatches'
           method: 'POST'
           customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
-          data: '{"event_type": "meta-image"}'
+          data: '{"event_type": "meta", "client_payload": ${{ github.event.client_payload }}}'

@@ -5,6 +5,9 @@ on:
   repository_dispatch:
     types:
       - detail
+env:
+  COUNTRY_CODE: ${{ github.event.client_payload.country_code }}
+
 jobs:
   pre:
     name: Pre
@@ -40,7 +43,7 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-data
+          repository: ClutterNews/${{ env.COUNTRY_CODE }}-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
@@ -168,7 +171,7 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-data
+          repository: ClutterNews/${{ env.COUNTRY_CODE }}-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
@@ -194,7 +197,7 @@ jobs:
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
-          repository: CltnApi/dtlkh
+          repository: CltnApi/dtl${{ env.COUNTRY_CODE }}
           path: dtl
           ref: gh-pages
           token: ${{ secrets.GH_PAT }}

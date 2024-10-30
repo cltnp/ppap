@@ -10,7 +10,7 @@ env:
   CHUNK_SIZE: 20
   FIRST_CHUNK_SIZE: 40
   ALIAS: ART
-  COUNTRY_CODE: kh
+  COUNTRY_CODE: ${{ github.event.client_payload.country_code }}
   LIST_LANGUAGE_CODE: km,en
   LIST_CATEGORY_CODE: NEWS,POLITICS,BUSINESS,ENVIRONMENT,LIFESTYLE,WORLD,ANALYTICS,SPECIAL_REPORTS,OPINION,NATIONAL,SPORT
 
@@ -41,14 +41,14 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v4
         with:
-          repository: ClutterNews/kh-data
+          repository: ClutterNews/${{ env.COUNTRY_CODE }}-data
           path: src/databases/data
           token: ${{ secrets.GH_PAT }}
 
       - name: Checkout api
         uses: actions/checkout@v4
         with:
-          repository: CltnApi/kh
+          repository: CltnApi/${{ env.COUNTRY_CODE }}
           path: apidata
           token: ${{ secrets.GH_PAT }}
           ref: gh-pages
