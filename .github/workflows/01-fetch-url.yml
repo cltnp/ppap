@@ -1,4 +1,4 @@
-name: Get Link
+name: 01 - Get Link
 
 on:
   workflow_dispatch:

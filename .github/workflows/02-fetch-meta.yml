@@ -1,4 +1,4 @@
-name: Get Meta
+name: 02 - Get Meta
 
 on:
   workflow_dispatch:

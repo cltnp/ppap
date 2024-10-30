@@ -1,4 +1,4 @@
-name: Get Meta Image
+name: 03 - Get Meta Image
 
 on:
   workflow_dispatch:

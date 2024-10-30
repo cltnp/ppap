@@ -1,4 +1,4 @@
-name: Get Detail
+name: 04 - Get Detail
 
 on:
   workflow_dispatch:
