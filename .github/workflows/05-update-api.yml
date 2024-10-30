@@ -11,8 +11,8 @@ env:
   FIRST_CHUNK_SIZE: 40
   ALIAS: ART
   COUNTRY_CODE: ${{ github.event.client_payload.country_code }}
-  LIST_LANGUAGE_CODE: km,en
-  LIST_CATEGORY_CODE: NEWS,POLITICS,BUSINESS,ENVIRONMENT,LIFESTYLE,WORLD,ANALYTICS,SPECIAL_REPORTS,OPINION,NATIONAL,SPORT
+  LIST_LANGUAGE_CODE: ${{ github.event.client_payload.list_language_code }}
+  LIST_CATEGORY_CODE: ${{ github.event.client_payload.list_category_code }}
 
 jobs:
   run:

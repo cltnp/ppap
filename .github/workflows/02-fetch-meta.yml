@@ -16,9 +16,6 @@ jobs:
     outputs:
       created-articles: ${{ steps.created-articles.outputs.value }}
     steps:
-      - name: Test
-        run: 'echo "payload: ${{ toJson(github.event.client_payload) }}"'
-
       - name: Checkout crawl
         uses: actions/checkout@v4
         with:
