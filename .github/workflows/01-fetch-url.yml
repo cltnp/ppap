@@ -16,7 +16,7 @@ jobs:
     outputs:
       sites: ${{ steps.sites.outputs.value }}
     steps:
-      - name: test
+      - name: Test
         run: 'echo "payload: ${{ toJson(github.event.client_payload) }}"'
 
       - name: Checkout crawl
