@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types:
-      - url
+      - url-*
 env:
   COUNTRY_CODE: ${{ github.event.client_payload.country_code }}
 
@@ -185,4 +185,4 @@ jobs:
           url: 'https://api.github.com/repos/cltnp/p/dispatches'
           method: 'POST'
           customHeaders: '{"Accept": "application/vnd.github+json", "Authorization": "Bearer ${{ secrets.GH_PAT }}", "X-GitHub-Api-Version": "2022-11-28"}'
-          data: '{"event_type": "meta", "client_payload": ${{ toJson(github.event.client_payload) }}}'
+          data: '{"event_type": "meta-${{COUNTRY_CODE}}", "client_payload": ${{ toJson(github.event.client_payload) }}}'

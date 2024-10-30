@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types:
-      - update-api
+      - update-api-*
 
 env:
   CHUNK_SIZE: 20
