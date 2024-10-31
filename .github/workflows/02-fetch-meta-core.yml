@@ -1,10 +1,10 @@
-name: 02 - Get Meta
+name: 02 - Get Meta Core
 
 on:
   workflow_dispatch:
   repository_dispatch:
     types:
-      - meta-*
+      - meta-core-*
 env:
   COUNTRY_CODE: ${{ github.event.client_payload.country_code }}
 
