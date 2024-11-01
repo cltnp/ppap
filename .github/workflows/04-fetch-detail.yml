@@ -113,10 +113,9 @@ jobs:
           IMAGE_URLS=$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md | grep -v 'github.com')
           if [ -n "$IMAGE_URLS" ]; then
             echo "$IMAGE_URLS" | while read -r url; do
-              curl -L -o ".temp/image.temp" "$url"
-              NAME=$(echo -n "$url" | md5sum | awk '{ print $1 }' | xargs)
-              EXT=$(file --mime-type -b ".temp/image.temp" | awk -F'/' '{print $2}')
-              mv ".temp/image.temp" ".temp/$NAME.$EXT"
+              export IMAGE_URL=$url
+              export IMAGE_NAME=$(echo -n "$url" | md5sum | awk '{ print $1 }' | xargs)
+              node src/functions/downloadImage.js
             done
           else
             echo "No image URLs found for ${{ matrix.code }}"
@@ -125,9 +124,6 @@ jobs:
       - name: Check on failures
         if: steps.download-images.outcome != 'success'
         run: mv .temp/${{ matrix.code }}.md .temp/${{ matrix.code }}.md.pass
-
-      - name: Convert Webp to Jpeg
-        run: node src/functions/converter.js
 
       - name: Prepare temp folder
         run: rm -rf .temp/.keep && mv .temp temp
@@ -138,6 +134,39 @@ jobs:
           name: ${{ matrix.code }}
           path: temp/
           if-no-files-found: warn
+
+      # - name: Download all images
+      #   id: download-images
+      #   continue-on-error: true
+      #   run: |
+      #     IMAGE_URLS=$(grep -oP '!\[.*?\]\(\K.*?(?=\))' .temp/${{ matrix.code }}.md | grep -v 'github.com')
+      #     if [ -n "$IMAGE_URLS" ]; then
+      #       echo "$IMAGE_URLS" | while read -r url; do
+      #         curl -L -o ".temp/image.temp" "$url"
+      #         NAME=$(echo -n "$url" | md5sum | awk '{ print $1 }' | xargs)
+      #         EXT=$(file --mime-type -b ".temp/image.temp" | awk -F'/' '{print $2}')
+      #         mv ".temp/image.temp" ".temp/$NAME.$EXT"
+      #       done
+      #     else
+      #       echo "No image URLs found for ${{ matrix.code }}"
+      #     fi
+
+      # - name: Check on failures
+      #   if: steps.download-images.outcome != 'success'
+      #   run: mv .temp/${{ matrix.code }}.md .temp/${{ matrix.code }}.md.pass
+
+      # - name: Convert Webp to Jpeg
+      #   run: node src/functions/converter.js
+
+      # - name: Prepare temp folder
+      #   run: rm -rf .temp/.keep && mv .temp temp
+
+      # - name: Upload to artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ matrix.code }}
+      #     path: temp/
+      #     if-no-files-found: warn
 
   after:
     name: After
