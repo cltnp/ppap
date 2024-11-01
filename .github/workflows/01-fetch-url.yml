@@ -47,9 +47,6 @@ jobs:
         id: sites
         run: echo "value=$(node src/functions/websites.js)" >> $GITHUB_OUTPUT
 
-      - name: Echo value
-        run: echo '${{ steps.sites.outputs.value }}'
-
   run:
     name: Run ${{ matrix.site_name}}
     runs-on: ubuntu-latest
